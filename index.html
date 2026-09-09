@@ -955,6 +955,518 @@
             .history-nav-btn { min-width: 0; width: 100%; }
             .history-food-row { grid-template-columns: 50px 1fr auto; }
         }
+    
+        /* ===== Responsive layout / mobile optimization ===== */
+        html {
+            -webkit-text-size-adjust: 100%;
+        }
+
+        body {
+            overflow-x: hidden;
+        }
+
+        img,
+        svg,
+        canvas {
+            max-width: 100%;
+        }
+
+        .btn,
+        .btn-small,
+        input,
+        textarea,
+        select {
+            touch-action: manipulation;
+        }
+
+        .btn {
+            min-height: 44px;
+        }
+
+        .btn-small {
+            min-height: 36px;
+        }
+
+        .card,
+        .modal-content,
+        .source-item,
+        .food-item,
+        .weight-item {
+            min-width: 0;
+        }
+
+        .food-item-content,
+        .weight-item-info {
+            min-width: 0;
+        }
+
+        .food-item-name,
+        .food-item-cal,
+        .source-item-meta,
+        .history-food-name,
+        .history-food-note {
+            overflow-wrap: anywhere;
+        }
+
+        @media (max-width: 1100px) {
+            .container {
+                padding: 16px;
+            }
+
+            .grid {
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 16px;
+            }
+
+            .card {
+                padding: 18px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                background: #f5f6f8;
+            }
+
+            .container {
+                width: 100%;
+                max-width: none;
+                padding: 14px 12px calc(24px + env(safe-area-inset-bottom));
+            }
+
+            .date-display {
+                margin-bottom: 12px;
+                padding: 2px 2px 0;
+                font-size: 13px;
+            }
+
+            /* 手機工具列改為雙欄，不再全部垂直拉很長 */
+            .toolbar {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 8px;
+                margin-bottom: 14px;
+            }
+
+            .toolbar .btn {
+                width: 100%;
+                min-width: 0;
+                padding: 10px 8px;
+                font-size: 13px;
+                line-height: 1.25;
+                white-space: normal;
+            }
+
+            .toolbar .btn:last-child {
+                grid-column: 1 / -1;
+            }
+
+            .grid {
+                display: grid;
+                grid-template-columns: minmax(0, 1fr);
+                gap: 12px;
+                margin-bottom: 12px;
+            }
+
+            .full-width {
+                grid-column: 1;
+            }
+
+            .card {
+                width: 100%;
+                padding: 16px;
+                border-radius: 12px;
+                box-shadow: 0 1px 2px rgba(0,0,0,.04);
+            }
+
+            .card-title {
+                font-size: 16px;
+                margin-bottom: 12px;
+                padding-bottom: 10px;
+            }
+
+            .stat-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 8px;
+                margin: 12px 0;
+            }
+
+            .stat-card {
+                min-width: 0;
+                padding: 12px 8px;
+                border-radius: 9px;
+            }
+
+            .stat-label {
+                font-size: 11px;
+                line-height: 1.35;
+                min-height: 30px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .stat-value {
+                font-size: clamp(18px, 6vw, 24px);
+                line-height: 1.15;
+                overflow-wrap: anywhere;
+            }
+
+            .schedule-item {
+                padding: 11px;
+                margin-bottom: 9px;
+            }
+
+            .schedule-food {
+                font-size: 13px;
+            }
+
+            .checklist-item {
+                min-height: 48px;
+                padding: 11px 2px;
+            }
+
+            .checklist-item input[type="checkbox"] {
+                width: 22px;
+                height: 22px;
+                flex: 0 0 22px;
+            }
+
+            .checklist-item label {
+                font-size: 14px;
+            }
+
+            /* 喝水杯在手機維持可點擊尺寸 */
+            .water-summary {
+                align-items: flex-end;
+            }
+
+            .water-amount {
+                font-size: 28px;
+            }
+
+            .water-cups {
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+                gap: 8px;
+            }
+
+            .water-cup {
+                height: 58px;
+            }
+
+            .water-actions {
+                display: grid;
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            .water-actions .btn {
+                min-width: 0;
+                padding: 9px 5px;
+                font-size: 12px;
+            }
+
+            /* 飲食與體重列表在窄螢幕改為上下排列 */
+            .food-item,
+            .weight-item {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+                padding: 12px;
+            }
+
+            .food-item-actions,
+            .weight-item-actions {
+                width: 100%;
+                margin-left: 0;
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 7px;
+            }
+
+            .food-item-actions .btn-small,
+            .weight-item-actions .btn-small {
+                width: 100%;
+                padding: 8px 6px;
+            }
+
+            .food-item-cal {
+                line-height: 1.7;
+            }
+
+            /* 表單 */
+            .input-group {
+                margin-bottom: 14px;
+            }
+
+            .input-group input,
+            .input-group textarea,
+            .input-group select {
+                width: 100%;
+                min-height: 46px;
+                padding: 11px 12px;
+                font-size: 16px; /* 防止 iOS focus 時自動放大 */
+            }
+
+            .input-group textarea {
+                min-height: 90px;
+                resize: vertical;
+            }
+
+            .url-fetch-row {
+                flex-direction: column;
+            }
+
+            .url-fetch-row .btn {
+                width: 100%;
+            }
+
+            .button-group {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 8px;
+            }
+
+            .button-group .btn {
+                width: 100%;
+            }
+
+            /* 一般彈窗在手機做成 bottom sheet */
+            .modal:not(.history-modal) {
+                padding: 12px 0 0;
+                align-items: flex-end;
+            }
+
+            .modal:not(.history-modal) .modal-content {
+                width: 100%;
+                max-width: none;
+                max-height: 90dvh;
+                padding: 22px 18px calc(22px + env(safe-area-inset-bottom));
+                border-radius: 18px 18px 0 0;
+            }
+
+            .modal-title {
+                font-size: 18px;
+                margin-bottom: 16px;
+            }
+
+            /* toast 不要在手機超出畫面 */
+            .toast-container {
+                top: calc(10px + env(safe-area-inset-top));
+                left: 10px;
+                right: 10px;
+                align-items: stretch;
+            }
+
+            .toast-message {
+                min-width: 0;
+                width: 100%;
+                max-width: none;
+            }
+
+            /* 資料來源條列 */
+            .source-records-titlebar {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .source-records-titlebar .btn {
+                width: 100%;
+            }
+
+            .source-records-list {
+                max-height: 58dvh;
+            }
+
+            .source-records-modal .source-item,
+            .source-item {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .source-item-url {
+                max-width: 100%;
+                white-space: normal;
+                overflow-wrap: anywhere;
+            }
+
+            .source-item-actions {
+                width: 100%;
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                justify-content: stretch;
+            }
+
+            .source-item-actions .btn-small,
+            .source-item-actions .btn {
+                width: 100%;
+            }
+
+            /* 翻書歷史：手機改成單頁閱讀但保留翻頁動畫 */
+            .history-modal {
+                padding: 0;
+                align-items: stretch;
+            }
+
+            .history-modal .history-modal-content {
+                width: 100%;
+                max-width: none;
+                height: 100dvh;
+                max-height: 100dvh;
+                border-radius: 0;
+                padding: calc(12px + env(safe-area-inset-top)) 10px calc(12px + env(safe-area-inset-bottom));
+                overflow-y: auto;
+            }
+
+            .history-topbar {
+                position: sticky;
+                top: 0;
+                z-index: 3;
+                padding: 4px 0 10px;
+                background: inherit;
+            }
+
+            .history-book-stage {
+                padding: 4px 0 10px;
+            }
+
+            .history-book {
+                min-height: auto;
+                border-radius: 10px;
+            }
+
+            .history-page {
+                min-height: auto;
+                padding: 22px 16px 22px 22px;
+            }
+
+            .history-date-row {
+                gap: 8px;
+                align-items: flex-start;
+            }
+
+            .history-date-main {
+                font-size: clamp(20px, 7vw, 28px);
+            }
+
+            .history-page-number {
+                font-size: 11px;
+            }
+
+            .history-summary-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 8px;
+            }
+
+            .history-page-columns {
+                grid-template-columns: 1fr;
+                gap: 18px;
+            }
+
+            .history-food-row {
+                grid-template-columns: 46px minmax(0, 1fr) auto;
+                gap: 8px;
+                align-items: start;
+            }
+
+            .history-food-cal,
+            .history-food-price {
+                white-space: normal;
+                text-align: right;
+            }
+
+            .history-navigation {
+                position: sticky;
+                bottom: 0;
+                z-index: 3;
+                padding: 10px 0 calc(4px + env(safe-area-inset-bottom));
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                background: inherit;
+            }
+
+            .history-jump {
+                grid-column: 1 / -1;
+                grid-row: 1;
+                width: 100%;
+                justify-content: center;
+            }
+
+            .history-jump select {
+                max-width: 100%;
+                min-height: 42px;
+                font-size: 16px;
+            }
+
+            .history-nav-btn {
+                width: 100%;
+                min-width: 0;
+            }
+        }
+
+        @media (max-width: 430px) {
+            .container {
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+
+            .toolbar {
+                gap: 7px;
+            }
+
+            .toolbar .btn {
+                font-size: 12px;
+                padding: 9px 5px;
+            }
+
+            .card {
+                padding: 14px;
+            }
+
+            .stat-grid {
+                gap: 7px;
+            }
+
+            .stat-card {
+                padding: 11px 6px;
+            }
+
+            .water-cups {
+                gap: 6px;
+            }
+
+            .water-cup {
+                height: 54px;
+            }
+
+            .water-cup-label {
+                font-size: 15px;
+            }
+
+            .button-group {
+                grid-template-columns: 1fr;
+            }
+
+            .source-item-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .history-page {
+                padding: 18px 12px 18px 18px;
+            }
+
+            .history-summary-card {
+                padding: 10px 6px;
+            }
+
+            .history-food-row {
+                grid-template-columns: 40px minmax(0, 1fr);
+            }
+
+            .history-food-row > :last-child {
+                grid-column: 2;
+                text-align: left;
+            }
+        }
+
     </style>
 </head>
 <body>
