@@ -1,0 +1,3308 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Cailing 減重計畫</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Microsoft YaHei', 'Segoe UI', sans-serif;
+            background: #fafbfc;
+            color: #1a1a1a;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .toolbar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            background: #f5f5f5;
+            border-color: #999;
+        }
+        
+        .btn-primary {
+            background: #E91E63;
+            color: white;
+            border-color: #E91E63;
+        }
+        
+        .btn-primary:hover {
+            background: #C2185B;
+            border-color: #C2185B;
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #E91E63;
+        }
+        
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            gap: 12px;
+            margin: 16px 0;
+        }
+        
+        .stat-card {
+            background: #f5f5f5;
+            padding: 16px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #E91E63;
+        }
+        
+        .schedule-item {
+            padding: 12px;
+            border-left: 4px solid #E91E63;
+            margin-bottom: 12px;
+            background: #fafbfc;
+            border-radius: 4px;
+        }
+        
+        .schedule-time {
+            font-weight: 700;
+            color: #E91E63;
+            font-size: 14px;
+        }
+        
+        .schedule-food {
+            font-size: 14px;
+            margin-top: 4px;
+            color: #333;
+        }
+        
+        .schedule-cal {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+        }
+        
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .checklist-item:last-child {
+            border-bottom: none;
+        }
+        
+        .checklist-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #E91E63;
+        }
+        
+        .checklist-item label {
+            flex: 1;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .alert {
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            font-size: 14px;
+            border-left: 4px solid;
+        }
+        
+        .alert-warning {
+            background: #fffbea;
+            border-left-color: #ffc107;
+            color: #856404;
+        }
+        
+        .alert-success {
+            background: #f1f9f0;
+            border-left-color: #28a745;
+            color: #155724;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #E91E63;
+            border-radius: 50%;
+            animation: blink 1.4s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 60%, 100% { opacity: 0.3; }
+            30% { opacity: 1; }
+        }
+        
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .input-group label {
+            font-weight: 500;
+            font-size: 14px;
+            color: #333;
+        }
+        
+        .input-group input,
+        .input-group textarea,
+        .input-group select {
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 14px;
+        }
+        
+        .input-group input:focus,
+        .input-group textarea:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: #E91E63;
+            box-shadow: 0 0 0 3px rgba(233, 30, 99, 0.1);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.show {
+            display: flex !important;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #E91E63;
+        }
+        
+        .food-item {
+            background: #fafbfc;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            border-left: 3px solid #E91E63;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        
+        .food-item-content {
+            flex: 1;
+        }
+        
+        .food-item-time {
+            font-weight: 600;
+            color: #E91E63;
+            font-size: 12px;
+        }
+        
+        .food-item-name {
+            font-size: 14px;
+            margin-top: 4px;
+            color: #333;
+        }
+        
+        .food-item-cal {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+        }
+        
+        .food-item-actions {
+            display: flex;
+            gap: 6px;
+            margin-left: 8px;
+        }
+        
+        .btn-small {
+            padding: 4px 8px;
+            font-size: 11px;
+            background: #E91E63;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .btn-small:hover {
+            background: #C2185B;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+        }
+        
+        .button-group .btn {
+            flex: 1;
+        }
+        
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .weight-item {
+            padding: 12px;
+            border-left: 3px solid #E91E63;
+            margin-bottom: 8px;
+            background: #fafbfc;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .weight-item-info {
+            flex: 1;
+        }
+        
+        .weight-item-date {
+            font-weight: 600;
+            color: #E91E63;
+        }
+        
+        .weight-item-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+            margin-top: 4px;
+        }
+        
+        .weight-item-actions {
+            display: flex;
+            gap: 6px;
+        }
+        
+        .date-display {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        /* 非阻塞式提示 */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+        }
+
+        .toast-message {
+            min-width: 240px;
+            max-width: min(380px, calc(100vw - 40px));
+            padding: 14px 16px;
+            border-radius: 10px;
+            background: #1f2937;
+            color: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+            font-size: 14px;
+            font-weight: 600;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity .22s ease, transform .22s ease;
+        }
+
+        .toast-message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .toast-message.success { background: #176b45; }
+        .toast-message.info { background: #2563eb; }
+        .toast-message.warning { background: #9a6700; }
+
+        /* 今日喝水圖像 */
+        .water-summary {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .water-amount {
+            font-size: 30px;
+            font-weight: 800;
+            color: #2196F3;
+        }
+
+        .water-goal {
+            color: #777;
+            font-size: 13px;
+        }
+
+        .water-cups {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 8px;
+            margin: 16px 0;
+        }
+
+        .water-cup {
+            position: relative;
+            height: 70px;
+            border: 2px solid #9ecff3;
+            border-top: 0;
+            border-radius: 3px 3px 10px 10px;
+            background: white;
+            overflow: hidden;
+            cursor: pointer;
+            padding: 0;
+            transition: transform .15s ease, border-color .15s ease;
+        }
+
+        .water-cup:hover {
+            transform: translateY(-2px);
+            border-color: #2196F3;
+        }
+
+        .water-cup-fill {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: var(--fill, 0%);
+            background: linear-gradient(180deg, #8ed7ff, #3aa8ef);
+            transition: height .3s ease;
+        }
+
+        .water-cup-label {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+            font-size: 17px;
+            text-shadow: 0 1px 2px rgba(255,255,255,.8);
+        }
+
+        .water-progress-track {
+            height: 8px;
+            border-radius: 999px;
+            background: #e9f4fb;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .water-progress-bar {
+            height: 100%;
+            width: 0%;
+            background: #2196F3;
+            border-radius: inherit;
+            transition: width .3s ease;
+        }
+
+        .water-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .water-actions .btn {
+            padding: 8px 12px;
+            flex: 1 1 90px;
+        }
+
+        /* 線上卡路里查詢狀態 */
+        .calorie-lookup-status {
+            min-height: 20px;
+            margin-top: -8px;
+            margin-bottom: 14px;
+            font-size: 12px;
+            color: #777;
+        }
+
+        .calorie-lookup-status.searching { color: #2563eb; }
+        .calorie-lookup-status.found { color: #176b45; }
+        .calorie-lookup-status.personal { color: #7c3aed; }
+        .calorie-lookup-status.fallback { color: #9a6700; }
+
+        .url-fetch-row {
+            display: flex;
+            gap: 8px;
+            align-items: stretch;
+        }
+
+        .url-fetch-row input {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .url-fetch-row .btn {
+            white-space: nowrap;
+            padding-left: 14px;
+            padding-right: 14px;
+        }
+
+        .field-hint {
+            margin-top: 6px;
+            font-size: 12px;
+            color: #888;
+        }
+
+        .source-url-link {
+            display: inline-block;
+            margin-top: 4px;
+            font-size: 12px;
+            color: #2563eb;
+            text-decoration: none;
+        }
+
+        .source-url-link:hover { text-decoration: underline; }
+
+        /* 可重複使用的網址資料來源庫 */
+        .source-library-header {
+            display: flex;
+            gap: 12px;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            margin-bottom: 14px;
+        }
+
+        .source-library-summary {
+            color: #666;
+            font-size: 13px;
+        }
+
+        .source-list {
+            display: grid;
+            gap: 10px;
+        }
+
+        .source-item {
+            border: 1px solid #e5e7eb;
+            background: #fafbfc;
+            border-radius: 7px;
+            padding: 12px;
+            display: flex;
+            justify-content: space-between;
+            gap: 14px;
+            align-items: flex-start;
+        }
+
+        .source-item-main { min-width: 0; flex: 1; }
+        .source-item-title { font-weight: 700; font-size: 14px; color: #222; }
+        .source-item-meta { margin-top: 4px; font-size: 12px; color: #777; }
+        .source-item-url {
+            margin-top: 5px;
+            font-size: 12px;
+            color: #2563eb;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 760px;
+        }
+        .source-item-actions { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+        .source-badge {
+            display: inline-block;
+            margin-right: 5px;
+            padding: 2px 7px;
+            border-radius: 999px;
+            background: #eef2ff;
+            color: #4338ca;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .source-badge.warning { background: #fff7ed; color: #9a3412; }
+        .source-library-empty {
+            padding: 18px;
+            text-align: center;
+            color: #999;
+            background: #fafbfc;
+            border: 1px dashed #ddd;
+            border-radius: 7px;
+        }
+        .source-index-status {
+            min-height: 20px;
+            margin-top: 8px;
+            font-size: 12px;
+            color: #777;
+        }
+
+
+
+        /* 資料來源紀錄：獨立條列視窗 */
+        .source-records-titlebar {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+
+        .source-records-list {
+            max-height: 58vh;
+            overflow-y: auto;
+            border-top: 1px solid #eceff3;
+        }
+
+        .source-records-modal .source-item {
+            border: 0;
+            border-bottom: 1px solid #eceff3;
+            border-radius: 0;
+            background: transparent;
+            padding: 14px 2px;
+        }
+
+        .source-records-modal .source-item:last-child {
+            border-bottom: 0;
+        }
+
+        .source-records-modal .source-item-title {
+            font-size: 14px;
+        }
+
+        .source-records-modal .source-item-url {
+            max-width: 560px;
+        }
+
+        @media (max-width: 768px) {
+            .source-records-titlebar {
+                flex-direction: column;
+            }
+
+            .source-records-titlebar .btn {
+                width: 100%;
+            }
+
+            .source-records-modal .source-item {
+                flex-direction: column;
+            }
+
+            .source-records-modal .source-item-actions {
+                justify-content: flex-start;
+            }
+        }
+
+        /* 歷史紀錄：翻書式日誌 */
+        .history-modal {
+            padding: 22px;
+        }
+
+        .history-modal .history-modal-content {
+            width: min(1080px, 96vw);
+            max-width: 1080px;
+            max-height: 94vh;
+            padding: 0;
+            overflow: hidden;
+            background: transparent;
+            box-shadow: none;
+        }
+
+        .history-topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 12px 4px;
+            color: white;
+        }
+
+        .history-topbar-title {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+        }
+
+        .history-close {
+            border: 1px solid rgba(255,255,255,0.5);
+            background: rgba(255,255,255,0.12);
+            color: white;
+        }
+
+        .history-book-stage {
+            perspective: 1600px;
+            padding: 12px 50px 20px;
+        }
+
+        .history-book {
+            position: relative;
+            min-height: 610px;
+            background: #f7f8fa;
+            border-radius: 10px 18px 18px 10px;
+            box-shadow: 0 24px 70px rgba(0,0,0,0.24), inset 18px 0 28px rgba(29,35,42,0.045);
+            transform-style: preserve-3d;
+            overflow: hidden;
+        }
+
+        .history-book::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 22px;
+            background: linear-gradient(90deg, rgba(43,50,58,0.13), rgba(255,255,255,0.18));
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        .history-book::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: repeating-linear-gradient(0deg, rgba(42,50,58,0.014) 0, rgba(42,50,58,0.014) 1px, transparent 1px, transparent 4px);
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .history-page {
+            position: relative;
+            z-index: 1;
+            min-height: 610px;
+            padding: 44px 52px 34px 64px;
+            transform-origin: left center;
+            backface-visibility: hidden;
+        }
+
+        .history-page.turn-out-next { animation: historyTurnOutNext .18s ease-in forwards; }
+        .history-page.turn-in-next { animation: historyTurnInNext .24s ease-out both; }
+        .history-page.turn-out-prev { animation: historyTurnOutPrev .18s ease-in forwards; }
+        .history-page.turn-in-prev { animation: historyTurnInPrev .24s ease-out both; }
+
+        @keyframes historyTurnOutNext {
+            from { transform: rotateY(0deg); opacity: 1; }
+            to { transform: rotateY(-76deg); opacity: .22; }
+        }
+        @keyframes historyTurnInNext {
+            from { transform: rotateY(72deg); opacity: .2; }
+            to { transform: rotateY(0deg); opacity: 1; }
+        }
+        @keyframes historyTurnOutPrev {
+            from { transform: rotateY(0deg); opacity: 1; }
+            to { transform: rotateY(76deg); opacity: .22; }
+        }
+        @keyframes historyTurnInPrev {
+            from { transform: rotateY(-72deg); opacity: .2; }
+            to { transform: rotateY(0deg); opacity: 1; }
+        }
+
+        .history-date-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            align-items: flex-end;
+            padding-bottom: 14px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #dde2e7;
+        }
+
+        .history-date-main {
+            font-family: Georgia, 'Times New Roman', 'Microsoft JhengHei', serif;
+            font-size: clamp(26px, 4vw, 42px);
+            font-weight: 700;
+            color: #23272d;
+            line-height: 1.15;
+        }
+
+        .history-date-sub {
+            margin-top: 6px;
+            color: #7a828c;
+            font-size: 13px;
+        }
+
+        .history-page-number {
+            color: #7a828c;
+            font-family: Georgia, serif;
+            white-space: nowrap;
+        }
+
+        .history-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .history-summary-card {
+            background: rgba(255,255,255,0.82);
+            border: 1px solid #e1e5e9;
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        .history-summary-label {
+            color: #7a828c;
+            font-size: 11px;
+            margin-bottom: 4px;
+        }
+
+        .history-summary-value {
+            color: #2d333a;
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .history-page-columns {
+            display: grid;
+            grid-template-columns: minmax(0, 1.25fr) minmax(280px, .75fr);
+            gap: 26px;
+        }
+
+        .history-section-title {
+            font-size: 14px;
+            font-weight: 800;
+            color: #3f464e;
+            margin-bottom: 9px;
+            letter-spacing: .05em;
+        }
+
+        .history-food-list,
+        .history-check-list {
+            display: grid;
+            gap: 8px;
+        }
+
+        .history-food-row {
+            display: grid;
+            grid-template-columns: 58px 1fr auto;
+            gap: 10px;
+            align-items: start;
+            padding: 9px 0;
+            border-bottom: 1px dashed #d8dde2;
+        }
+
+        .history-food-time { color: #7e8791; font-size: 12px; font-weight: 700; }
+        .history-food-name { color: #2d333a; font-weight: 700; font-size: 14px; }
+        .history-food-store, .history-food-note { color: #7a828c; font-size: 11px; margin-top: 2px; }
+        .history-food-cal { color: #b85f78; font-weight: 800; white-space: nowrap; font-size: 13px; }
+        .history-food-price { color: #557864; font-weight: 800; white-space: nowrap; font-size: 12px; margin-top: 3px; }
+
+        .history-check-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 9px;
+            border-radius: 6px;
+            background: rgba(255,255,255,0.42);
+            color: #59616a;
+            font-size: 13px;
+        }
+        .history-check-icon { width: 18px; text-align: center; }
+        .history-check-item.done { color: #557864; }
+
+        .history-weight-note {
+            margin-top: 14px;
+            padding: 12px;
+            border-left: 3px solid #b85f78;
+            background: rgba(255,255,255,.42);
+            color: #656d76;
+            font-size: 12px;
+        }
+
+        .history-empty-day {
+            padding: 44px 20px;
+            text-align: center;
+            color: #8a929b;
+            border: 1px dashed #d4d9de;
+            border-radius: 9px;
+            background: rgba(255,255,255,.28);
+        }
+
+        .history-navigation {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            gap: 12px;
+            padding: 13px 50px 0;
+        }
+
+        .history-nav-btn {
+            min-width: 132px;
+            border-color: rgba(255,255,255,.55);
+            background: rgba(255,255,255,.13);
+            color: white;
+        }
+        .history-nav-btn:hover { background: rgba(255,255,255,.22); }
+        .history-nav-btn:disabled { opacity: .35; }
+        .history-nav-next { justify-self: end; }
+        .history-jump {
+            display: flex;
+            gap: 7px;
+            align-items: center;
+            color: white;
+            font-size: 12px;
+        }
+        .history-jump select {
+            max-width: 180px;
+            padding: 8px 10px;
+            border: 1px solid rgba(255,255,255,.55);
+            border-radius: 6px;
+            background: rgba(255,255,255,.95);
+            color: #333;
+        }
+
+        .history-loading {
+            min-height: 400px;
+            display: grid;
+            place-items: center;
+            color: #7a828c;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .stat-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .toolbar {
+                flex-direction: column;
+            }
+            .history-modal { padding: 8px; }
+            .history-book-stage { padding: 5px 4px 12px; }
+            .history-book { min-height: 70vh; border-radius: 8px; }
+            .history-page { padding: 28px 22px 24px 30px; min-height: 70vh; }
+            .history-summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .history-page-columns { grid-template-columns: 1fr; }
+            .history-navigation { padding: 8px 4px 0; grid-template-columns: 1fr 1fr; }
+            .history-jump { grid-column: 1 / -1; grid-row: 1; justify-content: center; }
+            .history-nav-btn { min-width: 0; width: 100%; }
+            .history-food-row { grid-template-columns: 50px 1fr auto; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 日期 -->
+        <div class="date-display">
+            <span id="headerDate"></span> <span class="loading" id="syncStatus"></span>
+        </div>
+
+        <!-- 工具欄 -->
+        <div class="toolbar">
+            <button class="btn btn-primary" onclick="openWeightModal()">➕ 記錄體重</button>
+            <button class="btn btn-primary" onclick="openFoodModal()">🍽️ 記錄食物</button>
+            <button class="btn" onclick="openSourceLibraryModal()">🔗 新增資料來源</button>
+            <button class="btn" onclick="openSourceRecordsModal()">📚 資料來源紀錄</button>
+            <button class="btn" onclick="openHistoryModal()">📖 歷史紀錄</button>
+            <button class="btn" onclick="openWaterModal()">💧 設定喝水提醒</button>
+            <button class="btn" onclick="clearAllData()">🗑️ 清空所有數據</button>
+        </div>
+
+        <!-- 主要內容 -->
+        <div id="mainContent" class="grid">
+            <!-- 今日計畫 -->
+            <div class="card">
+                <div class="card-title">📅 今日計畫</div>
+                <div id="bobaAlert"></div>
+                <div id="scheduleContainer"></div>
+            </div>
+
+            <!-- 每日檢查清單 -->
+            <div class="card">
+                <div class="card-title">✓ 每日檢查清單</div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="check-boba" onchange="saveCheck('boba')">
+                    <label for="check-boba">喝珍奶了嗎？</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="check-water" onchange="saveCheck('water')">
+                    <label for="check-water">喝夠 2 升清水嗎？</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="check-meals" onchange="saveCheck('meals')">
+                    <label for="check-meals">三餐都吃了嗎？</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="check-exercise" onchange="saveCheck('exercise')">
+                    <label for="check-exercise">運動了嗎？</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="check-snack" onchange="saveCheck('snack')">
+                    <label for="check-snack">有沒有吃宵夜？</label>
+                </div>
+            </div>
+
+            <!-- 今日統計 -->
+            <div class="card">
+                <div class="card-title">📊 今日統計</div>
+                <div class="stat-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">今日卡路里</div>
+                        <div class="stat-value" id="dailyCal">1500</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">今日餐費</div>
+                        <div class="stat-value" id="dailyMealCost">NT$0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">累計總花費</div>
+                        <div class="stat-value" id="totalSpend">NT$0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">本周運動</div>
+                        <div class="stat-value" id="weekExercise">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">珍奶次數</div>
+                        <div class="stat-value" id="bobaCount">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">目前體重</div>
+                        <div class="stat-value" id="currentWeight">80</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 今日喝水 -->
+            <div class="card">
+                <div class="card-title">💧 今日喝水</div>
+                <div class="water-summary">
+                    <div><span class="water-amount" id="waterAmount">0</span> <strong>ml</strong></div>
+                    <div class="water-goal" id="waterGoalText">目標 2,000 ml</div>
+                </div>
+                <div class="water-progress-track">
+                    <div class="water-progress-bar" id="waterProgressBar"></div>
+                </div>
+                <div class="water-cups" id="waterCups" aria-label="今日喝水杯數"></div>
+                <div class="water-actions">
+                    <button class="btn" onclick="changeWaterIntake(-250)">− 250 ml</button>
+                    <button class="btn" onclick="changeWaterIntake(250)">+ 250 ml</button>
+                    <button class="btn" onclick="changeWaterIntake(500)">+ 500 ml</button>
+                </div>
+                <p style="font-size:12px;color:#888;margin-top:10px;">每杯代表 250 ml，也可以直接點杯子設定目前進度。</p>
+            </div>
+
+            <!-- 付款方式統計 -->
+            <div class="card full-width">
+                <div class="card-title">💳 付款方式統計</div>
+                <div id="paymentBreakdown" class="stat-grid">
+                    <div class="stat-card"><div class="stat-label">街口支付</div><div class="stat-value">NT$0</div></div>
+                    <div class="stat-card"><div class="stat-label">LINE Pay</div><div class="stat-value">NT$0</div></div>
+                    <div class="stat-card"><div class="stat-label">台灣行動支付</div><div class="stat-value">NT$0</div></div>
+                    <div class="stat-card"><div class="stat-label">轉帳</div><div class="stat-value">NT$0</div></div>
+                    <div class="stat-card"><div class="stat-label">現金</div><div class="stat-value">NT$0</div></div>
+                </div>
+            </div>
+
+            <!-- 今日飲食記錄 -->
+            <div class="card">
+                <div class="card-title">🍽️ 今日飲食記錄</div>
+                <div id="foodRecordsContainer">
+                    <p style="color: #999; text-align: center;">還沒有記錄食物</p>
+                </div>
+            </div>
+
+            <!-- 體重記錄 -->
+            <div class="card">
+                <div class="card-title">📈 體重記錄</div>
+                <div id="weightHistoryContainer">
+                    <p style="color: #999;">還沒有體重記錄</p>
+                </div>
+            </div>
+
+            <!-- 周報 -->
+            <div class="card full-width">
+                <div class="card-title">📋 本周報告</div>
+                <div id="weeklyReport"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 體重記錄 Modal -->
+    <div class="modal" id="weightModal">
+        <div class="modal-content">
+            <div class="modal-title">記錄體重</div>
+            <div class="input-group">
+                <label>體重 (kg)</label>
+                <input type="number" id="weightInput" placeholder="例：79.5" step="0.1" min="50" max="150">
+            </div>
+            <div class="input-group">
+                <label>備註（可選）</label>
+                <textarea id="weightNote" placeholder="例：早上測量，運動後" rows="3"></textarea>
+            </div>
+            <div class="button-group">
+                <button class="btn btn-primary" onclick="saveWeight()">保存</button>
+                <button class="btn" onclick="closeWeightModal()">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 編輯體重 Modal -->
+    <div class="modal" id="editWeightModal">
+        <div class="modal-content">
+            <div class="modal-title">編輯體重</div>
+            <div class="input-group">
+                <label>體重 (kg)</label>
+                <input type="number" id="editWeightInput" placeholder="例：79.5" step="0.1" min="50" max="150">
+            </div>
+            <div class="input-group">
+                <label>備註</label>
+                <textarea id="editWeightNote" rows="3"></textarea>
+            </div>
+            <div class="button-group">
+                <button class="btn btn-primary" onclick="saveEditWeight()">保存</button>
+                <button class="btn" onclick="closeEditWeightModal()">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 食物記錄 Modal -->
+    <div class="modal" id="foodModal">
+        <div class="modal-content">
+            <div class="modal-title">記錄食物</div>
+            <div class="input-group">
+                <label>吃的時間</label>
+                <input type="time" id="foodTime">
+            </div>
+            <div class="input-group">
+                <label>店家 / 品牌</label>
+                <input type="text" id="foodStore" list="foodStoreHistory" placeholder="例：7-ELEVEN、全家、麥當勞">
+                <datalist id="foodStoreHistory"></datalist>
+            </div>
+            <div class="input-group">
+                <label>食物名稱 / 品項</label>
+                <input type="text" id="foodName" list="foodNameHistory" placeholder="例：御飯糰、大麥克、珍珠奶茶">
+                <datalist id="foodNameHistory"></datalist>
+                <div class="field-hint">曾經記錄過的店家與品項會成為之後的自動帶入資料。</div>
+            </div>
+            <div class="input-group">
+                <label>參考網址（可選）</label>
+                <div class="url-fetch-row">
+                    <input type="url" id="foodSourceUrl" placeholder="貼上商品頁、官方菜單或營養資訊網址">
+                    <button type="button" class="btn" id="fetchUrlCaloriesBtn" onclick="fetchCaloriesFromUrl()">從網址抓取</button>
+                </div>
+                <div class="field-hint">會讀取頁面中的 kcal／大卡／千卡／卡／熱量資訊；抓不到時仍可手動輸入。</div>
+            </div>
+            <div class="input-group">
+                <label>卡路里</label>
+                <input type="number" id="foodCal" placeholder="優先使用你的歷史紀錄，再查網路..." step="1" min="0">
+            </div>
+            <div class="input-group">
+                <label>這餐花費（NT$）</label>
+                <input type="number" id="foodPrice" placeholder="例：120" step="1" min="0">
+                <div class="field-hint">可留空；每天會自動加總成「今日餐費」，並一起收進歷史紀錄。</div>
+            </div>
+            <div class="input-group">
+                <label>付款方式</label>
+                <select id="foodPaymentMethod">
+                    <option value="">請選擇付款方式</option>
+                    <option value="街口支付">街口支付</option>
+                    <option value="LINE Pay">LINE Pay</option>
+                    <option value="台灣行動支付">台灣行動支付</option>
+                    <option value="轉帳">轉帳</option>
+                    <option value="現金">現金</option>
+                </select>
+                <div class="field-hint">有填餐費時需要選擇付款方式。</div>
+            </div>
+            <div class="calorie-lookup-status" id="calorieLookupStatus">輸入店家與品項後，會先比對你曾經記錄過的資料。</div>
+            <div class="input-group">
+                <label>備註</label>
+                <textarea id="foodNote" placeholder="例：7-11 便當、清蒸雞腿" rows="2"></textarea>
+            </div>
+            <div class="button-group">
+                <button class="btn btn-primary" onclick="saveFood()">保存</button>
+                <button class="btn" onclick="closeFoodModal()">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 編輯食物 Modal -->
+    <div class="modal" id="editFoodModal">
+        <div class="modal-content">
+            <div class="modal-title">編輯食物</div>
+            <div class="input-group">
+                <label>吃的時間</label>
+                <input type="time" id="editFoodTime">
+            </div>
+            <div class="input-group">
+                <label>店家 / 品牌</label>
+                <input type="text" id="editFoodStore">
+            </div>
+            <div class="input-group">
+                <label>食物名稱</label>
+                <input type="text" id="editFoodName">
+            </div>
+            <div class="input-group">
+                <label>卡路里</label>
+                <input type="number" id="editFoodCal" step="1" min="0">
+            </div>
+            <div class="input-group">
+                <label>這餐花費（NT$）</label>
+                <input type="number" id="editFoodPrice" step="1" min="0" placeholder="例：120">
+            </div>
+            <div class="input-group">
+                <label>付款方式</label>
+                <select id="editFoodPaymentMethod">
+                    <option value="">請選擇付款方式</option>
+                    <option value="街口支付">街口支付</option>
+                    <option value="LINE Pay">LINE Pay</option>
+                    <option value="台灣行動支付">台灣行動支付</option>
+                    <option value="轉帳">轉帳</option>
+                    <option value="現金">現金</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>參考網址（可選）</label>
+                <input type="url" id="editFoodSourceUrl" placeholder="商品頁、菜單或營養資訊網址">
+            </div>
+            <div class="input-group">
+                <label>備註</label>
+                <textarea id="editFoodNote" rows="2"></textarea>
+            </div>
+            <div class="button-group">
+                <button class="btn btn-primary" onclick="saveEditFood()">保存</button>
+                <button class="btn" onclick="closeEditFoodModal()">取消</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 資料來源紀錄 Modal -->
+    <div class="modal source-records-modal" id="sourceRecordsModal">
+        <div class="modal-content" style="max-width: 820px;">
+            <div class="source-records-titlebar">
+                <div>
+                    <div class="modal-title" style="margin-bottom:6px;">📚 資料來源紀錄</div>
+                    <div class="source-library-summary" id="sourceLibrarySummary">把菜單、官方營養頁、商品頁存進來，之後輸入品項時會一起比對。</div>
+                </div>
+                <button class="btn btn-primary" onclick="openSourceLibraryModal()">＋ 新增網址</button>
+            </div>
+            <div id="sourceLibraryContainer" class="source-list source-records-list">
+                <div class="source-library-empty">還沒有資料來源。想到任何網址都可以先丟進來。</div>
+            </div>
+            <div class="button-group" style="margin-top:20px;">
+                <button class="btn" onclick="closeSourceRecordsModal()">關閉</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 網址資料來源庫 Modal -->
+    <div class="modal" id="sourceLibraryModal">
+        <div class="modal-content">
+            <div class="modal-title">🔗 新增資料來源</div>
+            <div class="input-group">
+                <label>來源名稱（可選）</label>
+                <input type="text" id="sourceLibraryName" placeholder="例：麥當勞官方營養資訊、7-ELEVEN 商品頁">
+            </div>
+            <div class="input-group">
+                <label>店家 / 品牌（可選）</label>
+                <input type="text" id="sourceLibraryStore" placeholder="例：麥當勞、7-ELEVEN、全家">
+            </div>
+            <div class="input-group">
+                <label>網址</label>
+                <input type="url" id="sourceLibraryUrl" placeholder="https://...">
+                <div class="field-hint">加入時會嘗試讀取頁面，把品項附近的 kcal／大卡／千卡／卡資料建立成可搜尋索引。</div>
+            </div>
+            <div class="source-index-status" id="sourceLibraryModalStatus"></div>
+            <div class="button-group">
+                <button class="btn btn-primary" id="saveSourceLibraryBtn" onclick="saveSourceLibraryUrl()">加入並建立索引</button>
+                <button class="btn" onclick="closeSourceLibraryModal()">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 喝水提醒 Modal -->
+    <div class="modal" id="waterModal">
+        <div class="modal-content">
+            <div class="modal-title">💧 設定喝水提醒</div>
+            <div class="input-group">
+                <label>提醒間隔（分鐘）</label>
+                <input type="number" id="waterInterval" placeholder="例：60" min="5" max="480" value="60">
+            </div>
+            <div class="input-group">
+                <label>開始時間</label>
+                <input type="time" id="waterStartTime" value="06:00">
+            </div>
+            <div class="input-group">
+                <label>結束時間</label>
+                <input type="time" id="waterEndTime" value="22:00">
+            </div>
+            <div style="background: #f0f0f0; padding: 12px; border-radius: 6px; margin-bottom: 16px;">
+                <p style="font-size: 13px; color: #666;">例如：從 06:00 到 22:00，每隔 1 小時會提醒妳喝水一次</p>
+            </div>
+            <div class="button-group">
+                <button class="btn btn-primary" onclick="saveWaterReminder()">開始提醒</button>
+                <button class="btn" onclick="stopWaterReminder()">停止提醒</button>
+                <button class="btn" onclick="closeWaterModal()">取消</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 歷史紀錄：每日封存翻書 -->
+    <div class="modal history-modal" id="historyModal">
+        <div class="history-modal-content">
+            <div class="history-topbar">
+                <div class="history-topbar-title">📖 歷史紀錄</div>
+                <button class="btn history-close" onclick="closeHistoryModal()">關閉</button>
+            </div>
+            <div class="history-book-stage">
+                <div class="history-book">
+                    <div class="history-page" id="historyPage">
+                        <div class="history-loading">正在整理過往紀錄…</div>
+                    </div>
+                </div>
+            </div>
+            <div class="history-navigation">
+                <button class="btn history-nav-btn" id="historyPrevBtn" onclick="turnHistoryPage(-1)">← 較舊一頁</button>
+                <div class="history-jump">
+                    <span>跳到</span>
+                    <select id="historyDateSelect" onchange="jumpHistoryDate(this.value)"></select>
+                </div>
+                <button class="btn history-nav-btn history-nav-next" id="historyNextBtn" onclick="turnHistoryPage(1)">較新一頁 →</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container" id="toastContainer" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- Firebase 腳本 -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDc9aY4wgIPmNJUbyRlJXDWDXiIBUCBAIo",
+            authDomain: "cailing-fitness.firebaseapp.com",
+            databaseURL: "https://cailing-fitness-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "cailing-fitness",
+            storageBucket: "cailing-fitness.firebasestorage.app",
+            messagingSenderId: "400581381134",
+            appId: "1:400581381134:web:e70827a6b5d0f29414005f",
+            measurementId: "G-KV3BGQ6V56"
+        };
+
+        // 初始化 Firebase（使用 compat SDK，保留原本 db.ref() 寫法）
+        let db = null;
+        let firebaseInitError = null;
+
+        try {
+            firebase.initializeApp(firebaseConfig);
+            db = firebase.database();
+        } catch (error) {
+            firebaseInitError = error;
+            console.error('Firebase 初始化失敗：', error);
+        }
+
+        // 以台灣時區產生 YYYY-MM-DD，避免 toISOString() 的 UTC 日期跨日問題
+        function getTaipeiDateString(date = new Date()) {
+            const parts = new Intl.DateTimeFormat('en-US', {
+                timeZone: 'Asia/Taipei',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            }).formatToParts(date);
+
+            const values = {};
+            parts.forEach(part => {
+                if (part.type !== 'literal') values[part.type] = part.value;
+            });
+            return `${values.year}-${values.month}-${values.day}`;
+        }
+
+        function showToast(message, type = 'success', duration = 2200) {
+            const container = document.getElementById('toastContainer');
+            if (!container) return;
+            const toast = document.createElement('div');
+            toast.className = `toast-message ${type}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+            requestAnimationFrame(() => toast.classList.add('show'));
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 240);
+            }, duration);
+        }
+
+        function showFirebaseError(action, error) {
+            console.error(`${action}失敗：`, error);
+            const message = error && error.message ? error.message : String(error || '未知錯誤');
+            alert(`❌ ${action}失敗：${message}`);
+        }
+
+        function requireDatabase() {
+            if (db) return true;
+            const message = firebaseInitError && firebaseInitError.message
+                ? firebaseInitError.message
+                : 'Firebase 尚未成功初始化';
+            alert(`❌ 無法連接 Firebase：${message}`);
+            return false;
+        }
+
+        function monitorFirebaseConnection() {
+            const status = document.getElementById('syncStatus');
+            if (!status) return;
+
+            if (!db) {
+                status.style.background = '#dc3545';
+                status.title = 'Firebase 初始化失敗';
+                return;
+            }
+
+            db.ref('.info/connected').on('value', (snapshot) => {
+                const connected = snapshot.val() === true;
+                status.style.background = connected ? '#28a745' : '#ffc107';
+                status.title = connected ? 'Firebase 已連線' : 'Firebase 連線中 / 已離線';
+            }, (error) => {
+                status.style.background = '#dc3545';
+                status.title = `Firebase 連線錯誤：${error.message}`;
+                console.error('Firebase 連線監測失敗：', error);
+            });
+        }
+
+        const calorieMap = {
+            '飯糰': 290, '便當': 600, '清蒸': 400, '滷肉': 500, '珍奶': 300,
+            '奶茶': 250, '冬瓜茶': 80, '檸檬水': 20, '蛋': 70, '雞腿': 300,
+            '魚': 200, '蔬菜': 50, '米飯': 150, '麵': 350, '漢堡': 500,
+            '咖啡': 50, '茶': 0, '水': 0
+        };
+
+        const scheduleData = {
+            0: [
+                { time: '6:00-6:30', food: '7-11 或全家飯糰 1 個 + 茶葉蛋 1 顆', cal: 290 },
+                { time: '10:00-12:00', food: '上課（帶水瓶）', cal: 0 },
+                { time: '12:00-13:00', food: '7-11 或全家便當（清蒸雞腿/滷肉）', cal: 600 },
+                { time: '13:00-17:00', food: '上課', cal: 0 },
+                { time: '17:00-18:00', food: '下課便當（清蒸雞腿）', cal: 500 },
+                { time: '18:00-19:30', food: '運動：瑜伽/快走/HIIT 40 分鐘', cal: -200 },
+                { time: '20:00+', food: '不吃', cal: 0 }
+            ],
+            1: [
+                { time: '6:00-6:30', food: '7-11 或全家飯糰 2 個 + 茶葉蛋 1 顆', cal: 360 },
+                { time: '8:30-11:30', food: '上課（帶水瓶）', cal: 0 },
+                { time: '11:30-13:00', food: '午餐：7-11 或全家便當', cal: 600 },
+                { time: '13:00-17:30', food: '上課', cal: 0 },
+                { time: '18:00-19:30', food: '運動：瑜伽/快走/HIIT 40 分鐘', cal: -200 },
+                { time: '19:45-20:00', food: '便當（清蒸雞腿/滷肉便當）', cal: 450 }
+            ],
+            2: [
+                { time: '6:00-6:30', food: '7-11 或全家飯糰 2 個 + 茶葉蛋 1 顆', cal: 360 },
+                { time: '8:30-11:30', food: '上課（帶水瓶）', cal: 0 },
+                { time: '11:30-13:00', food: '午餐：7-11 或全家便當', cal: 600 },
+                { time: '13:00-17:30', food: '上課', cal: 0 },
+                { time: '18:00-19:30', food: '運動：瑜伽/快走/HIIT 40 分鐘', cal: -200 },
+                { time: '19:45-20:00', food: '便當（清蒸雞腿/滷肉便當）', cal: 450 }
+            ],
+            3: [
+                { time: '6:00-6:30', food: '7-11 或全家飯糰 2 個 + 茶葉蛋 1 顆', cal: 360 },
+                { time: '8:30-11:30', food: '上課（帶水瓶）', cal: 0 },
+                { time: '11:30-13:00', food: '午餐：7-11 或全家便當', cal: 600 },
+                { time: '13:00-17:30', food: '上課', cal: 0 },
+                { time: '18:00-19:30', food: '運動：瑜伽/快走/HIIT 40 分鐘', cal: -200 },
+                { time: '19:45-20:00', food: '便當（清蒸雞腿/滷肉便當）', cal: 450 }
+            ],
+            4: [
+                { time: '6:00-6:30', food: '7-11 或全家飯糰 1 個 + 茶葉蛋 1 顆', cal: 290 },
+                { time: '10:00-12:00', food: '上課（帶水瓶）', cal: 0 },
+                { time: '12:00-13:00', food: '7-11 或全家便當（清蒸雞腿/滷肉）', cal: 600 },
+                { time: '13:00-17:00', food: '上課', cal: 0 },
+                { time: '17:00-18:00', food: '下課便當（清蒸雞腿）', cal: 500 },
+                { time: '18:00-19:30', food: '運動：瑜伽/快走/HIIT 40 分鐘', cal: -200 },
+                { time: '20:00+', food: '不吃', cal: 0 }
+            ],
+            5: [
+                { time: '6:30-7:00', food: '7-11 或全家飯糰 1 個 + 茶葉蛋 1 顆', cal: 290 },
+                { time: '12:00-13:00', food: '7-11 或全家便當', cal: 600 },
+                { time: '18:00-19:00', food: '運動（可選）瑜伽/快走 30 分鐘', cal: -150 },
+                { time: '19:30-20:00', food: '便當', cal: 450 }
+            ],
+            6: [
+                { time: '6:30-7:00', food: '7-11 或全家飯糰 1 個 + 茶葉蛋 1 顆', cal: 290 },
+                { time: '12:00-13:00', food: '7-11 或全家便當', cal: 600 },
+                { time: '18:00-19:00', food: '自由選擇', cal: 450 },
+                { time: '20:00+', food: '不吃宵夜', cal: 0 }
+            ]
+        };
+
+        let editingWeightDate = null;
+        let editingFoodIdx = null;
+
+        function estimateCalories(foodName) {
+            let total = 0;
+            const lowerName = foodName.toLowerCase();
+            for (const [keyword, cal] of Object.entries(calorieMap)) {
+                if (lowerName.includes(keyword.toLowerCase())) {
+                    total += cal;
+                }
+            }
+            return total > 0 ? total : Math.floor(Math.random() * 200 + 200);
+        }
+
+        let calorieLookupSeq = 0;
+        let lastCalorieLookupKey = '';
+        let currentFoodLookupMeta = null;
+        let personalFoodLibrary = {};
+        let sourceLibrary = {};
+        let sourceLibraryLoaded = false;
+        let existingSourceImportStarted = false;
+
+        function normalizeFoodText(value) {
+            return String(value || '')
+                .trim()
+                .toLowerCase()
+                .replace(/[\s\-_·・\/\\]+/g, '')
+                .replace(/[()（）\[\]【】]/g, '');
+        }
+
+        function safeHttpUrl(value) {
+            try {
+                const url = new URL(String(value || '').trim());
+                return /^https?:$/.test(url.protocol) ? url.href : '';
+            } catch (error) {
+                return '';
+            }
+        }
+
+        function stableHash(value) {
+            let hash = 2166136261;
+            const str = String(value || '');
+            for (let i = 0; i < str.length; i++) {
+                hash ^= str.charCodeAt(i);
+                hash = Math.imul(hash, 16777619);
+            }
+            return (hash >>> 0).toString(36);
+        }
+
+        function getFoodLibraryKey(store, name) {
+            return `food_${stableHash(`${normalizeFoodText(store)}|${normalizeFoodText(name)}`)}`;
+        }
+
+        function getSourceLibraryKey(url) {
+            return `src_${stableHash(String(url || '').trim().toLowerCase())}`;
+        }
+
+        function escapeHtml(value) {
+            return String(value == null ? '' : value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function getHostLabel(url) {
+            try {
+                return new URL(url).hostname.replace(/^www\./, '');
+            } catch (error) {
+                return '';
+            }
+        }
+
+        function extractPageTitle(text, fallbackUrl = '') {
+            const lines = String(text || '').split('\n').map(v => v.trim()).filter(Boolean);
+            const heading = lines.find(line => /^#\s+/.test(line));
+            if (heading) return heading.replace(/^#\s+/, '').trim().slice(0, 120);
+            return getHostLabel(fallbackUrl) || '未命名資料來源';
+        }
+
+        function extractAllCalorieCandidates(text) {
+            const cleaned = String(text || '').replace(/\r/g, ' ');
+            const patterns = [
+                /(?:熱量|卡路里|calories?|energy)[^\n]{0,100}?(\d{1,4}(?:\.\d+)?)\s*(?:kcal|大卡|千卡|卡路里|卡(?!路里))?/gi,
+                /(\d{1,4}(?:\.\d+)?)\s*(?:kcal|大卡|千卡|卡路里|卡(?!路里))/gi
+            ];
+            const results = [];
+            const seen = new Set();
+
+            patterns.forEach((re, priority) => {
+                let match;
+                while ((match = re.exec(cleaned)) !== null) {
+                    const calories = Number(match[1]);
+                    if (!Number.isFinite(calories) || calories <= 0 || calories > 2000) continue;
+                    const from = Math.max(0, match.index - 220);
+                    const to = Math.min(cleaned.length, match.index + match[0].length + 220);
+                    const context = cleaned.slice(from, to).replace(/\s+/g, ' ').trim().slice(0, 520);
+                    const basis = /100\s*g|100g|每\s*100/i.test(context)
+                        ? '每 100g/ml'
+                        : (/每份|serving|per serving/i.test(context) ? '每份' : '頁面標示');
+                    const dedupeKey = `${Math.round(calories)}|${normalizeFoodText(context).slice(0, 100)}`;
+                    if (seen.has(dedupeKey)) continue;
+                    seen.add(dedupeKey);
+                    results.push({
+                        calories: Math.round(calories),
+                        basis,
+                        context,
+                        priority: priority === 0 ? 2 : 1
+                    });
+                    if (results.length >= 120) break;
+                }
+            });
+            return results.slice(0, 120);
+        }
+
+        async function readSourcePage(url) {
+            const valid = safeHttpUrl(url);
+            if (!valid) throw new Error('INVALID_URL');
+            const response = await fetch(`https://r.jina.ai/${valid}`, { headers: { 'Accept': 'text/plain' } });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            return await response.text();
+        }
+
+        function scoreSourceCandidate(source, entry, store, name) {
+            const ns = normalizeFoodText(store);
+            const nn = normalizeFoodText(name);
+            if (!nn) return 0;
+            const context = normalizeFoodText(entry.context || '');
+            const sourceText = normalizeFoodText(`${source.store || ''}${source.name || ''}${source.url || ''}`);
+            let score = Number(entry.priority || 0);
+
+            if (context.includes(nn)) score += 18;
+            else if (nn.length >= 4) {
+                const chunks = [];
+                for (let i = 0; i < nn.length - 1; i++) chunks.push(nn.slice(i, i + 2));
+                const matched = chunks.filter(chunk => context.includes(chunk)).length;
+                score += Math.min(10, matched * 2);
+            }
+
+            if (ns) {
+                if (context.includes(ns)) score += 7;
+                if (sourceText.includes(ns)) score += 7;
+            }
+            if (/每份/.test(entry.basis || '')) score += 2;
+            return score;
+        }
+
+        function findCaloriesInSourceLibrary(store, name) {
+            const candidates = [];
+            Object.entries(sourceLibrary || {}).forEach(([sourceKey, source]) => {
+                const index = Array.isArray(source && source.index) ? source.index : [];
+                index.forEach((entry, indexPos) => {
+                    const calories = Number(entry && entry.calories);
+                    if (!Number.isFinite(calories) || calories <= 0) return;
+                    const score = scoreSourceCandidate(source, entry, store, name);
+                    if (score > 0) candidates.push({ sourceKey, source, entry, indexPos, score });
+                });
+            });
+            candidates.sort((a, b) => b.score - a.score || Number(b.source.updatedAt || 0) - Number(a.source.updatedAt || 0));
+            const best = candidates[0];
+            const second = candidates[1];
+            if (!best || best.score < 12) return null;
+            if (second && second.score === best.score && Number(second.entry.calories) !== Number(best.entry.calories)) return null;
+            return best;
+        }
+
+        function applySourceLibraryMatch(store, name, { quiet = false } = {}) {
+            const best = findCaloriesInSourceLibrary(store, name);
+            if (!best) return null;
+            const calories = Math.round(Number(best.entry.calories));
+            document.getElementById('foodCal').value = calories;
+            if (!document.getElementById('foodSourceUrl').value.trim()) {
+                document.getElementById('foodSourceUrl').value = best.source.url || '';
+            }
+            currentFoodLookupMeta = {
+                source: '我的網址資料庫',
+                matchedProduct: [best.source.store, name].filter(Boolean).join(' · '),
+                basis: best.entry.basis || '已保存網頁資料',
+                online: false,
+                sourceURL: best.source.url || ''
+            };
+            if (!quiet) {
+                setCalorieLookupStatus(`🔗 從你的資料來源「${best.source.name || getHostLabel(best.source.url)}」找到約 ${calories} 卡（${currentFoodLookupMeta.basis}）`, 'personal');
+            }
+            return currentFoodLookupMeta;
+        }
+
+        function setCalorieLookupStatus(text, state = '') {
+            const el = document.getElementById('calorieLookupStatus');
+            if (!el) return;
+            el.textContent = text;
+            el.className = `calorie-lookup-status ${state}`.trim();
+        }
+
+        function updateFoodHistoryDatalists() {
+            const storeList = document.getElementById('foodStoreHistory');
+            const nameList = document.getElementById('foodNameHistory');
+            if (!storeList || !nameList) return;
+
+            const items = Object.values(personalFoodLibrary || {})
+                .filter(item => item && item.name)
+                .sort((a, b) => Number(b.lastUsedAt || b.updatedAt || 0) - Number(a.lastUsedAt || a.updatedAt || 0));
+
+            const stores = [...new Set(items.map(item => item.store).filter(Boolean))].slice(0, 80);
+            const names = [...new Set(items.map(item => item.name).filter(Boolean))].slice(0, 120);
+            storeList.innerHTML = stores.map(v => `<option value="${String(v).replace(/"/g, '&quot;')}"></option>`).join('');
+            nameList.innerHTML = names.map(v => `<option value="${String(v).replace(/"/g, '&quot;')}"></option>`).join('');
+        }
+
+        function loadPersonalFoodLibrary() {
+            if (!db) return;
+            db.ref('foodLibrary').on('value', snapshot => {
+                personalFoodLibrary = snapshot.val() || {};
+                updateFoodHistoryDatalists();
+            }, error => {
+                console.error('讀取個人食物資料庫失敗：', error);
+            });
+        }
+
+        function findPersonalFood(store, name) {
+            const ns = normalizeFoodText(store);
+            const nn = normalizeFoodText(name);
+            if (!nn) return null;
+
+            const exact = personalFoodLibrary[getFoodLibraryKey(store, name)];
+            if (exact && normalizeFoodText(exact.name) === nn && normalizeFoodText(exact.store) === ns) {
+                return exact;
+            }
+
+            const matches = Object.values(personalFoodLibrary || {})
+                .filter(item => item && normalizeFoodText(item.name) === nn)
+                .filter(item => !ns || normalizeFoodText(item.store) === ns)
+                .sort((a, b) => Number(b.lastUsedAt || b.updatedAt || 0) - Number(a.lastUsedAt || a.updatedAt || 0));
+            return matches[0] || null;
+        }
+
+        function applyPersonalFoodMatch(store, name, { quiet = false } = {}) {
+            const match = findPersonalFood(store, name);
+            if (!match || !Number.isFinite(Number(match.calories))) return null;
+
+            document.getElementById('foodCal').value = Math.round(Number(match.calories));
+            if (match.sourceUrl && !document.getElementById('foodSourceUrl').value.trim()) {
+                document.getElementById('foodSourceUrl').value = match.sourceUrl;
+            }
+            currentFoodLookupMeta = {
+                source: '我的紀錄',
+                matchedProduct: [match.store, match.name].filter(Boolean).join(' · '),
+                basis: '最後一次確認的熱量',
+                online: false,
+                sourceURL: match.sourceUrl || ''
+            };
+            if (!quiet) {
+                setCalorieLookupStatus(`★ 使用你之前的紀錄：${currentFoodLookupMeta.matchedProduct}｜${Math.round(Number(match.calories))} 卡`, 'personal');
+            }
+            return currentFoodLookupMeta;
+        }
+
+        async function saveToPersonalFoodLibrary({ store, name, calories, sourceUrl = '', source = '我的紀錄' }) {
+            if (!db || !name || !Number.isFinite(Number(calories))) return;
+            const key = getFoodLibraryKey(store, name);
+            const old = personalFoodLibrary[key] || {};
+            await db.ref(`foodLibrary/${key}`).set({
+                store: String(store || '').trim(),
+                name: String(name || '').trim(),
+                calories: Math.round(Number(calories)),
+                sourceUrl: String(sourceUrl || '').trim(),
+                source,
+                useCount: Number(old.useCount || 0) + 1,
+                updatedAt: Date.now(),
+                lastUsedAt: Date.now()
+            });
+        }
+
+        function renderSourceLibrary() {
+            const container = document.getElementById('sourceLibraryContainer');
+            const summary = document.getElementById('sourceLibrarySummary');
+            if (!container || !summary) return;
+
+            const items = Object.entries(sourceLibrary || {})
+                .filter(([, item]) => item && item.url)
+                .sort((a, b) => Number(b[1].updatedAt || b[1].createdAt || 0) - Number(a[1].updatedAt || a[1].createdAt || 0));
+            const totalEntries = items.reduce((sum, [, item]) => sum + (Array.isArray(item.index) ? item.index.length : 0), 0);
+            summary.textContent = `已保存 ${items.length} 個網址，共建立 ${totalEntries} 筆熱量索引。新增食物時會在查一般網路資料前先搜尋這裡。`;
+
+            if (!items.length) {
+                container.innerHTML = '<div class="source-library-empty">還沒有資料來源。想到任何菜單、官方營養頁或商品頁都可以先丟進來。</div>';
+                return;
+            }
+
+            container.innerHTML = items.map(([key, item]) => {
+                const url = safeHttpUrl(item.url);
+                const count = Array.isArray(item.index) ? item.index.length : 0;
+                const statusBadge = count > 0
+                    ? `<span class="source-badge">可搜尋 ${count} 筆</span>`
+                    : `<span class="source-badge warning">尚無可用熱量索引</span>`;
+                const updated = item.updatedAt ? new Date(Number(item.updatedAt)).toLocaleString('zh-TW') : '';
+                return `
+                    <div class="source-item">
+                        <div class="source-item-main">
+                            <div class="source-item-title">${escapeHtml(item.name || getHostLabel(item.url) || '未命名來源')}</div>
+                            <div class="source-item-meta">
+                                ${statusBadge}
+                                ${item.store ? `<span>${escapeHtml(item.store)}</span>` : ''}
+                                ${updated ? `<span> · 更新 ${escapeHtml(updated)}</span>` : ''}
+                            </div>
+                            <div class="source-item-url">${escapeHtml(item.url)}</div>
+                        </div>
+                        <div class="source-item-actions">
+                            ${url ? `<a class="btn-small" style="text-decoration:none;" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">開啟</a>` : ''}
+                            <button class="btn-small" onclick="refreshSourceLibraryUrl('${key}')">重新抓取</button>
+                            <button class="btn-small" style="background:#ff6b6b;" onclick="deleteSourceLibraryUrl('${key}')">刪除</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function loadSourceLibrary() {
+            if (!db) return;
+            db.ref('sourceLibrary').on('value', snapshot => {
+                sourceLibrary = snapshot.val() || {};
+                sourceLibraryLoaded = true;
+                renderSourceLibrary();
+                importExistingFoodUrls();
+            }, error => {
+                console.error('讀取網址資料來源庫失敗：', error);
+            });
+        }
+
+        function openSourceRecordsModal() {
+            renderSourceLibrary();
+            document.getElementById('sourceRecordsModal').classList.add('show');
+        }
+
+        function closeSourceRecordsModal() {
+            document.getElementById('sourceRecordsModal').classList.remove('show');
+        }
+
+        function openSourceLibraryModal(prefillUrl = '', prefillStore = '', prefillName = '') {
+            document.getElementById('sourceLibraryName').value = prefillName || '';
+            document.getElementById('sourceLibraryStore').value = prefillStore || '';
+            document.getElementById('sourceLibraryUrl').value = prefillUrl || '';
+            document.getElementById('sourceLibraryModalStatus').textContent = '';
+            document.getElementById('sourceLibraryModal').classList.add('show');
+        }
+
+        function closeSourceLibraryModal() {
+            document.getElementById('sourceLibraryModal').classList.remove('show');
+        }
+
+        async function indexAndSaveSourceUrl({ url, name = '', store = '', imported = false, silent = false }) {
+            if (!db) return null;
+            const validUrl = safeHttpUrl(url);
+            if (!validUrl) throw new Error('INVALID_URL');
+            const key = getSourceLibraryKey(validUrl);
+            const old = sourceLibrary[key] || {};
+
+            // 先把網址放進資料庫，即使該網站暫時抓不到，仍然會留在來源清單中。
+            await db.ref(`sourceLibrary/${key}`).update({
+                url: validUrl,
+                name: String(name || old.name || getHostLabel(validUrl)).trim(),
+                store: String(store || old.store || '').trim(),
+                imported: Boolean(imported || old.imported),
+                createdAt: Number(old.createdAt || Date.now()),
+                updatedAt: Date.now(),
+                indexStatus: 'reading'
+            });
+
+            try {
+                const pageText = await readSourcePage(validUrl);
+                const index = extractAllCalorieCandidates(pageText);
+                const pageTitle = extractPageTitle(pageText, validUrl);
+                await db.ref(`sourceLibrary/${key}`).update({
+                    name: String(name || old.name || pageTitle || getHostLabel(validUrl)).trim(),
+                    store: String(store || old.store || '').trim(),
+                    index,
+                    indexedCount: index.length,
+                    indexStatus: index.length ? 'ready' : 'no_kcal',
+                    lastFetchedAt: Date.now(),
+                    updatedAt: Date.now()
+                });
+                if (!silent) showToast(index.length ? `🔗 已加入來源，建立 ${index.length} 筆熱量索引` : '🔗 網址已保存，但頁面沒有找到明確熱量資料', index.length ? 'success' : 'info');
+                return { key, indexCount: index.length };
+            } catch (error) {
+                console.error('建立網址索引失敗：', error);
+                await db.ref(`sourceLibrary/${key}`).update({
+                    indexStatus: 'unreadable',
+                    lastError: error && error.message ? error.message : String(error),
+                    updatedAt: Date.now()
+                });
+                if (!silent) showToast('🔗 網址已保存，但目前無法讀取內容', 'info');
+                return { key, indexCount: 0, error };
+            }
+        }
+
+        async function saveSourceLibraryUrl() {
+            if (!requireDatabase()) return;
+            const name = document.getElementById('sourceLibraryName').value.trim();
+            const store = document.getElementById('sourceLibraryStore').value.trim();
+            const url = document.getElementById('sourceLibraryUrl').value.trim();
+            const status = document.getElementById('sourceLibraryModalStatus');
+            const button = document.getElementById('saveSourceLibraryBtn');
+            if (!safeHttpUrl(url)) {
+                status.textContent = '請貼上完整的 http:// 或 https:// 網址。';
+                return;
+            }
+
+            button.disabled = true;
+            button.textContent = '建立索引中…';
+            status.textContent = '正在讀取頁面並整理可供未來品項搜尋的熱量資料…';
+            try {
+                const result = await indexAndSaveSourceUrl({ url, name, store, silent: true });
+                status.textContent = result && result.indexCount
+                    ? `完成：建立 ${result.indexCount} 筆可搜尋熱量資料。`
+                    : '網址已保存；目前沒有抓到可用熱量，但你之後仍可重新抓取。';
+                setTimeout(() => closeSourceLibraryModal(), 700);
+                showToast(result && result.indexCount ? `🔗 資料來源已加入（${result.indexCount} 筆索引）` : '🔗 資料來源已加入');
+            } catch (error) {
+                status.textContent = '加入失敗，請確認網址格式。';
+                console.error(error);
+            } finally {
+                button.disabled = false;
+                button.textContent = '加入並建立索引';
+            }
+        }
+
+        async function refreshSourceLibraryUrl(key) {
+            const source = sourceLibrary[key];
+            if (!source || !source.url) return;
+            showToast('🔄 正在重新抓取資料來源…', 'info');
+            await indexAndSaveSourceUrl({ url: source.url, name: source.name, store: source.store, silent: true });
+            showToast('✅ 資料來源已重新整理');
+        }
+
+        async function deleteSourceLibraryUrl(key) {
+            if (!requireDatabase()) return;
+            if (!confirm('確定要從資料來源庫刪除這個網址嗎？已經記錄過的飲食不會被刪除。')) return;
+            try {
+                await db.ref(`sourceLibrary/${key}`).remove();
+                showToast('已刪除資料來源', 'info');
+            } catch (error) {
+                showFirebaseError('刪除資料來源', error);
+            }
+        }
+
+        async function ensureSourceLibraryUrl(url, { store = '', name = '', silent = true } = {}) {
+            const validUrl = safeHttpUrl(url);
+            if (!validUrl || !db) return;
+            const key = getSourceLibraryKey(validUrl);
+            const existing = sourceLibrary[key];
+            if (existing && Array.isArray(existing.index) && existing.index.length) return;
+            await indexAndSaveSourceUrl({ url: validUrl, store, name, imported: true, silent });
+        }
+
+        async function importExistingFoodUrls() {
+            if (!db || !sourceLibraryLoaded || existingSourceImportStarted) return;
+            existingSourceImportStarted = true;
+            try {
+                const [foodLibrarySnap, foodsSnap] = await Promise.all([
+                    db.ref('foodLibrary').once('value'),
+                    db.ref('foods').once('value')
+                ]);
+                const urls = new Map();
+                Object.values(foodLibrarySnap.val() || {}).forEach(item => {
+                    const url = safeHttpUrl(item && item.sourceUrl);
+                    if (url && !urls.has(url)) urls.set(url, { url, store: item.store || '', name: item.name ? `${item.store || ''} ${item.name}`.trim() : '' });
+                });
+                Object.values(foodsSnap.val() || {}).forEach(day => {
+                    Object.values(day || {}).forEach(item => {
+                        const url = safeHttpUrl(item && item.sourceUrl);
+                        if (url && !urls.has(url)) urls.set(url, { url, store: item.store || '', name: item.name ? `${item.store || ''} ${item.name}`.trim() : '' });
+                    });
+                });
+
+                const missing = [...urls.values()].filter(item => !sourceLibrary[getSourceLibraryKey(item.url)]);
+                // 舊資料自動搬進來源庫；逐筆處理，避免同時對很多網站發請求。
+                for (const item of missing) {
+                    try {
+                        await indexAndSaveSourceUrl({ ...item, imported: true, silent: true });
+                    } catch (error) {
+                        console.error('匯入既有參考網址失敗：', item.url, error);
+                    }
+                }
+                if (missing.length) showToast(`🔗 已把 ${missing.length} 個舊網址整理進資料來源庫`, 'info', 3000);
+            } catch (error) {
+                console.error('整理既有參考網址失敗：', error);
+            }
+        }
+
+        function getProductCalories(product) {
+            const n = product && product.nutriments ? product.nutriments : {};
+            const servingKcal = Number(n['energy-kcal_serving']);
+            if (Number.isFinite(servingKcal) && servingKcal > 0) {
+                return { calories: Math.round(servingKcal), basis: '每份' };
+            }
+
+            const kcal100 = Number(n['energy-kcal_100g']);
+            const servingQty = Number(product && product.serving_quantity);
+            if (Number.isFinite(kcal100) && kcal100 > 0 && Number.isFinite(servingQty) && servingQty > 0) {
+                return { calories: Math.round(kcal100 * servingQty / 100), basis: `每份約 ${servingQty}g/ml` };
+            }
+
+            if (Number.isFinite(kcal100) && kcal100 > 0) {
+                return { calories: Math.round(kcal100), basis: '每 100g/ml（請依實際份量調整）' };
+            }
+            return null;
+        }
+
+        function productMatchScore(product, store, name) {
+            const haystack = [
+                product.product_name,
+                product.product_name_zh,
+                product.product_name_en,
+                product.brands,
+                product.generic_name
+            ].filter(Boolean).join(' ').toLowerCase();
+            const storeTokens = store.toLowerCase().split(/\s+/).filter(Boolean);
+            const nameTokens = name.toLowerCase().split(/\s+/).filter(Boolean);
+            let score = 0;
+            nameTokens.forEach(t => { if (haystack.includes(t)) score += 3; });
+            storeTokens.forEach(t => { if (haystack.includes(t)) score += 2; });
+            if (product.nutriments && (product.nutriments['energy-kcal_serving'] || product.nutriments['energy-kcal_100g'])) score += 2;
+            return score;
+        }
+
+        async function lookupCaloriesOnline(force = false) {
+            const store = (document.getElementById('foodStore')?.value || '').trim();
+            const name = (document.getElementById('foodName')?.value || '').trim();
+            if (!name) return null;
+
+            const personal = applyPersonalFoodMatch(store, name);
+            if (personal && !force) return personal;
+
+            const savedSource = applySourceLibraryMatch(store, name);
+            if (savedSource && !force) return savedSource;
+
+            const key = `${store}|${name}`.toLowerCase();
+            if (!force && key === lastCalorieLookupKey && currentFoodLookupMeta) return currentFoodLookupMeta;
+            lastCalorieLookupKey = key;
+            const seq = ++calorieLookupSeq;
+            currentFoodLookupMeta = null;
+            setCalorieLookupStatus('🔎 個人紀錄與已保存網址都沒有明確符合，正在查詢一般網路營養資料…', 'searching');
+
+            try {
+                const query = [store, name].filter(Boolean).join(' ');
+                const params = new URLSearchParams({
+                    search_terms: query,
+                    search_simple: '1',
+                    action: 'process',
+                    json: '1',
+                    page_size: '8'
+                });
+                const response = await fetch(`https://world.openfoodfacts.org/cgi/search.pl?${params.toString()}`);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const data = await response.json();
+                if (seq !== calorieLookupSeq) return null;
+
+                const products = (data.products || [])
+                    .map(product => ({ product, kcal: getProductCalories(product), score: productMatchScore(product, store, name) }))
+                    .filter(item => item.kcal)
+                    .sort((a, b) => b.score - a.score);
+
+                if (products.length) {
+                    const best = products[0];
+                    const productName = best.product.product_name || best.product.product_name_zh || best.product.product_name_en || name;
+                    const brand = best.product.brands || store || '';
+                    document.getElementById('foodCal').value = best.kcal.calories;
+                    currentFoodLookupMeta = {
+                        source: 'Open Food Facts',
+                        matchedProduct: [brand, productName].filter(Boolean).join(' · '),
+                        basis: best.kcal.basis,
+                        online: true,
+                        sourceURL: ''
+                    };
+                    setCalorieLookupStatus(`✓ 查到：${currentFoodLookupMeta.matchedProduct}｜約 ${best.kcal.calories} 卡（${best.kcal.basis}）`, 'found');
+                    return currentFoodLookupMeta;
+                }
+                throw new Error('NO_MATCH');
+            } catch (error) {
+                if (seq !== calorieLookupSeq) return null;
+                const fallback = estimateCalories(`${store} ${name}`);
+                document.getElementById('foodCal').value = fallback;
+                currentFoodLookupMeta = {
+                    source: '本地估算',
+                    matchedProduct: [store, name].filter(Boolean).join(' · '),
+                    basis: '關鍵字估算',
+                    online: false,
+                    sourceURL: ''
+                };
+                const reason = error && error.message === 'NO_MATCH' ? '網路資料庫沒有符合品項' : '目前無法取得網路資料';
+                setCalorieLookupStatus(`⚠ ${reason}，已先估算 ${fallback} 卡；確認後保存，之後就會成為你的個人資料。`, 'fallback');
+                return currentFoodLookupMeta;
+            }
+        }
+
+        function extractCaloriesFromPageText(text, store = '', name = '') {
+            const cleaned = String(text || '').replace(/\r/g, ' ');
+            const patterns = [
+                /(?:熱量|卡路里|calories?|energy)[^\n]{0,80}?(\d{1,4}(?:\.\d+)?)\s*(?:kcal|大卡|千卡|卡路里|卡(?!路里))?/gi,
+                /(\d{1,4}(?:\.\d+)?)\s*(?:kcal|大卡|千卡|卡路里|卡(?!路里))/gi
+            ];
+            const candidates = [];
+            const tokens = [store, name].join(' ').toLowerCase().split(/\s+/).filter(t => t.length >= 2);
+
+            patterns.forEach((re, priority) => {
+                let match;
+                while ((match = re.exec(cleaned)) !== null) {
+                    const calories = Number(match[1]);
+                    if (!Number.isFinite(calories) || calories <= 0 || calories > 2000) continue;
+                    const from = Math.max(0, match.index - 180);
+                    const to = Math.min(cleaned.length, match.index + match[0].length + 180);
+                    const context = cleaned.slice(from, to).replace(/\s+/g, ' ').trim();
+                    const lc = context.toLowerCase();
+                    let score = priority === 0 ? 10 : 3;
+                    tokens.forEach(t => { if (lc.includes(t)) score += 3; });
+                    if (/每份|serving|per serving/i.test(context)) score += 3;
+                    if (/100\s*g|100g|每100/i.test(context)) score += 1;
+                    candidates.push({ calories: Math.round(calories), score, context });
+                    if (candidates.length > 80) break;
+                }
+            });
+
+            candidates.sort((a, b) => b.score - a.score || a.calories - b.calories);
+            const best = candidates[0];
+            if (!best) return null;
+            const basis = /100\s*g|100g|每100/i.test(best.context)
+                ? '網頁標示每 100g/ml（請確認份量）'
+                : (/每份|serving|per serving/i.test(best.context) ? '網頁標示每份' : '網頁熱量標示');
+            return { calories: best.calories, basis, context: best.context };
+        }
+
+        async function fetchCaloriesFromUrl() {
+            const urlInput = document.getElementById('foodSourceUrl');
+            const button = document.getElementById('fetchUrlCaloriesBtn');
+            const store = (document.getElementById('foodStore')?.value || '').trim();
+            const name = (document.getElementById('foodName')?.value || '').trim();
+            const rawUrl = (urlInput?.value || '').trim();
+
+            if (!rawUrl) {
+                setCalorieLookupStatus('請先貼上參考網址。', 'fallback');
+                return null;
+            }
+
+            let parsed;
+            try {
+                parsed = new URL(rawUrl);
+                if (!/^https?:$/.test(parsed.protocol)) throw new Error('INVALID_PROTOCOL');
+            } catch (error) {
+                setCalorieLookupStatus('網址格式不正確，請貼上完整的 http:// 或 https:// 網址。', 'fallback');
+                return null;
+            }
+
+            button.disabled = true;
+            const originalText = button.textContent;
+            button.textContent = '抓取中…';
+            setCalorieLookupStatus('🔗 正在讀取網址內容並尋找熱量資料…', 'searching');
+
+            try {
+                const readerUrl = `https://r.jina.ai/${parsed.href}`;
+                const response = await fetch(readerUrl, { headers: { 'Accept': 'text/plain' } });
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const pageText = await response.text();
+                const result = extractCaloriesFromPageText(pageText, store, name);
+                if (!result) throw new Error('NO_KCAL');
+
+                document.getElementById('foodCal').value = result.calories;
+                currentFoodLookupMeta = {
+                    source: '參考網址',
+                    matchedProduct: [store, name].filter(Boolean).join(' · ') || parsed.hostname,
+                    basis: result.basis,
+                    online: true,
+                    sourceURL: parsed.href
+                };
+                setCalorieLookupStatus(`✓ 從網址抓到約 ${result.calories} 卡（${result.basis}）。請確認數字與頁面份量是否一致。`, 'found');
+                return currentFoodLookupMeta;
+            } catch (error) {
+                console.error('網址熱量抓取失敗：', error);
+                const message = error && error.message === 'NO_KCAL'
+                    ? '頁面有讀到，但找不到明確的 kcal／大卡／千卡／卡數字。'
+                    : '這個網址目前無法讀取，可能有網站限制或內容需要登入。';
+                setCalorieLookupStatus(`⚠ ${message} 你仍可手動輸入；保存後下次會直接使用你的紀錄。`, 'fallback');
+                return null;
+            } finally {
+                button.disabled = false;
+                button.textContent = originalText;
+            }
+        }
+
+        function bindCalorieLookup() {
+            const store = document.getElementById('foodStore');
+            const name = document.getElementById('foodName');
+            const cal = document.getElementById('foodCal');
+            const sourceUrl = document.getElementById('foodSourceUrl');
+            if (!store || !name || !cal) return;
+
+            const tryPersonal = () => {
+                const s = store.value.trim();
+                const n = name.value.trim();
+                if (!n) return;
+                const matched = applyPersonalFoodMatch(s, n);
+                if (!matched) {
+                    if (currentFoodLookupMeta && currentFoodLookupMeta.source !== '手動輸入') {
+                        cal.value = '';
+                        currentFoodLookupMeta = null;
+                    }
+                    setCalorieLookupStatus('沒有完全相同的個人紀錄；輸入完成後會搜尋你的網址資料庫。');
+                }
+            };
+
+            const triggerOnline = () => {
+                if (!name.value.trim()) return;
+                const matched = applyPersonalFoodMatch(store.value.trim(), name.value.trim());
+                const sourceMatched = matched ? null : applySourceLibraryMatch(store.value.trim(), name.value.trim());
+                if (!matched && !sourceMatched) lookupCaloriesOnline();
+            };
+
+            store.addEventListener('input', tryPersonal);
+            name.addEventListener('input', tryPersonal);
+            store.addEventListener('change', triggerOnline);
+            name.addEventListener('change', triggerOnline);
+
+            cal.addEventListener('input', () => {
+                currentFoodLookupMeta = {
+                    source: '手動輸入',
+                    matchedProduct: [store.value.trim(), name.value.trim()].filter(Boolean).join(' · '),
+                    basis: '你手動確認的熱量',
+                    online: false,
+                    sourceURL: sourceUrl?.value.trim() || currentFoodLookupMeta?.sourceURL || ''
+                };
+                setCalorieLookupStatus('✎ 目前使用你手動輸入的熱量；保存後會記進個人食物資料庫。', 'personal');
+            });
+        }
+
+        function displayDate() {
+            const today = new Date();
+            const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+            const dateStr = today.toLocaleDateString('zh-TW');
+            const weekday = weekdays[today.getDay()];
+            document.getElementById('headerDate').textContent = `${dateStr} ${weekday}`;
+        }
+
+        function getTodaySchedule() {
+            const today = new Date();
+            const day = today.getDay();
+            return scheduleData[day];
+        }
+
+        function loadTodaySchedule() {
+            const schedule = getTodaySchedule();
+            let html = '';
+
+            schedule.forEach(item => {
+                html += `
+                    <div class="schedule-item">
+                        <div class="schedule-time">⏰ ${item.time}</div>
+                        <div class="schedule-food">🍽️ ${item.food}</div>
+                        <div class="schedule-cal">📊 ${item.cal > 0 ? '+' : item.cal < 0 ? '' : ''}${item.cal > 0 || item.cal < 0 ? item.cal : '-'} 卡</div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('scheduleContainer').innerHTML = html;
+
+            const today = new Date();
+            const dayOfWeek = today.getDay();
+            let bobaHtml = '';
+
+            if (today <= new Date(2026, 8, 30)) {
+                if (dayOfWeek === 3) {
+                    bobaHtml = '<div class="alert alert-success">✅ 這週的珍奶日！可喝 1 杯（只限今天）</div>';
+                } else {
+                    bobaHtml = '<div class="alert alert-warning">⚠️ 只喝清水/氣泡水/冬瓜茶/檸檬水（不能喝珍奶）</div>';
+                }
+            } else if (today <= new Date(2026, 9, 31)) {
+                bobaHtml = '<div class="alert alert-success">🎉 第 2 階段（10 月）：完全戒珍奶！體重會明顯下降</div>';
+            } else {
+                bobaHtml = '<div class="alert alert-warning">維持期：保持無珍奶習慣，2 週可喝 1 杯當獎勵</div>';
+            }
+
+            document.getElementById('bobaAlert').innerHTML = bobaHtml;
+
+            const totalCal = schedule.reduce((sum, item) => sum + item.cal, 0);
+            document.getElementById('dailyCal').textContent = totalCal;
+        }
+
+        function loadChecklistData() {
+            const today = getTaipeiDateString();
+            db.ref(`checklist/${today}`).on('value', (snapshot) => {
+                const data = snapshot.val() || {};
+                Object.keys(data).forEach(key => {
+                    const checkbox = document.getElementById(`check-${key}`);
+                    if (checkbox) checkbox.checked = data[key];
+                });
+            });
+        }
+
+        async function saveCheck(key) {
+            if (!requireDatabase()) return;
+            const today = getTaipeiDateString();
+            const checkbox = document.getElementById(`check-${key}`);
+
+            try {
+                await db.ref(`checklist/${today}/${key}`).set(checkbox.checked);
+                loadStats();
+                loadWeeklyReport();
+            } catch (error) {
+                showFirebaseError('儲存檢查清單', error);
+                loadChecklistData();
+            }
+        }
+
+        function openWeightModal() {
+            document.getElementById('weightModal').classList.add('show');
+        }
+
+        function closeWeightModal() {
+            document.getElementById('weightModal').classList.remove('show');
+            document.getElementById('weightInput').value = '';
+            document.getElementById('weightNote').value = '';
+        }
+
+        async function saveWeight() {
+            if (!requireDatabase()) return;
+            const weight = parseFloat(document.getElementById('weightInput').value);
+            const note = document.getElementById('weightNote').value;
+
+            if (!weight) {
+                alert('請輸入體重');
+                return;
+            }
+
+            const today = getTaipeiDateString();
+
+            try {
+                await db.ref(`weights/${today}`).set({
+                    weight,
+                    note,
+                    timestamp: Date.now()
+                });
+                closeWeightModal();
+                showToast('✅ 體重已記錄！');
+            } catch (error) {
+                showFirebaseError('儲存體重', error);
+            }
+        }
+
+        function openEditWeightModal(date) {
+            if (!requireDatabase()) return;
+            editingWeightDate = date;
+            db.ref(`weights/${date}`).once('value', (snapshot) => {
+                const data = snapshot.val();
+                document.getElementById('editWeightInput').value = data.weight;
+                document.getElementById('editWeightNote').value = data.note || '';
+                document.getElementById('editWeightModal').classList.add('show');
+            });
+        }
+
+        function closeEditWeightModal() {
+            document.getElementById('editWeightModal').classList.remove('show');
+            editingWeightDate = null;
+        }
+
+        async function saveEditWeight() {
+            if (!requireDatabase()) return;
+            const weight = parseFloat(document.getElementById('editWeightInput').value);
+            const note = document.getElementById('editWeightNote').value;
+
+            if (!weight) {
+                alert('請輸入體重');
+                return;
+            }
+
+            try {
+                const editedDate = editingWeightDate;
+                await db.ref(`weights/${editedDate}`).set({
+                    weight,
+                    note,
+                    timestamp: Date.now()
+                });
+                if (editedDate < getTaipeiDateString()) await refreshHistoryDate(editedDate);
+                closeEditWeightModal();
+                showToast('✅ 體重已更新！');
+            } catch (error) {
+                showFirebaseError('更新體重', error);
+            }
+        }
+
+        async function deleteWeight(date) {
+            if (!requireDatabase()) return;
+            if (!confirm('確定要刪除這筆體重記錄嗎？')) return;
+
+            try {
+                await db.ref(`weights/${date}`).remove();
+                if (date < getTaipeiDateString()) await refreshHistoryDate(date);
+                showToast('🗑️ 體重記錄已刪除', 'info');
+            } catch (error) {
+                showFirebaseError('刪除體重', error);
+            }
+        }
+
+        function loadWeightHistory() {
+            db.ref('weights').on('value', (snapshot) => {
+                const weights = snapshot.val() || {};
+                const dates = Object.keys(weights).sort().reverse();
+                
+                let html = '';
+                if (dates.length === 0) {
+                    html = '<p style="color: #999;">還沒有體重記錄</p>';
+                } else {
+                    dates.forEach(date => {
+                        const data = weights[date];
+                        html += `
+                            <div class="weight-item">
+                                <div class="weight-item-info">
+                                    <div class="weight-item-date">${date}</div>
+                                    <div class="weight-item-value">${data.weight} kg</div>
+                                    ${data.note ? `<div style="font-size: 12px; color: #999;">${data.note}</div>` : ''}
+                                </div>
+                                <div class="weight-item-actions">
+                                    <button class="btn-small" onclick="openEditWeightModal('${date}')">編輯</button>
+                                    <button class="btn-small" style="background: #ff6b6b;" onclick="deleteWeight('${date}')">刪除</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    const latestDate = dates[0];
+                    document.getElementById('currentWeight').textContent = weights[latestDate].weight.toFixed(1);
+                }
+                document.getElementById('weightHistoryContainer').innerHTML = html;
+            });
+        }
+
+        function openFoodModal() {
+            document.getElementById('foodModal').classList.add('show');
+            const now = new Date();
+            document.getElementById('foodTime').value = now.toTimeString().slice(0, 5);
+            document.getElementById('foodStore').value = '';
+            document.getElementById('foodName').value = '';
+            document.getElementById('foodSourceUrl').value = '';
+            document.getElementById('foodCal').value = '';
+            document.getElementById('foodPrice').value = '';
+            document.getElementById('foodPaymentMethod').value = '';
+            document.getElementById('foodNote').value = '';
+            lastCalorieLookupKey = '';
+            currentFoodLookupMeta = null;
+            setCalorieLookupStatus('先輸入店家與品項；會依序搜尋你的歷史紀錄 → 已保存網址 → 一般網路資料。');
+        }
+
+        function closeFoodModal() {
+            document.getElementById('foodModal').classList.remove('show');
+        }
+
+        async function saveFood() {
+            if (!requireDatabase()) return;
+            const time = document.getElementById('foodTime').value;
+            const store = document.getElementById('foodStore').value.trim();
+            const name = document.getElementById('foodName').value.trim();
+            const sourceUrl = document.getElementById('foodSourceUrl').value.trim();
+            const priceRaw = document.getElementById('foodPrice').value;
+            const price = priceRaw === '' ? 0 : Math.max(0, Number(priceRaw) || 0);
+            const paymentMethod = document.getElementById('foodPaymentMethod').value;
+            let cal = document.getElementById('foodCal').value;
+
+            if (!time || !name) {
+                alert('請輸入時間和食物名稱');
+                return;
+            }
+
+            if (price > 0 && !paymentMethod) {
+                showToast('💳 有填餐費時，請選擇付款方式', 'error');
+                return;
+            }
+
+            if (!cal) {
+                const personal = applyPersonalFoodMatch(store, name);
+                const savedSource = personal ? null : applySourceLibraryMatch(store, name);
+                if (!personal && !savedSource) await lookupCaloriesOnline(true);
+                cal = document.getElementById('foodCal').value || estimateCalories(`${store} ${name}`);
+            }
+
+            const calories = parseInt(cal);
+            const note = document.getElementById('foodNote').value;
+            const today = getTaipeiDateString();
+            const timestamp = Date.now();
+            const meta = currentFoodLookupMeta || {
+                source: '手動輸入',
+                matchedProduct: [store, name].filter(Boolean).join(' · '),
+                basis: '你手動確認的熱量',
+                sourceURL: sourceUrl
+            };
+            const finalSourceUrl = sourceUrl || meta.sourceURL || '';
+            const libraryKey = getFoodLibraryKey(store, name);
+            const oldLibrary = personalFoodLibrary[libraryKey] || {};
+
+            try {
+                const updates = {};
+                updates[`foods/${today}/${timestamp}`] = {
+                    time,
+                    store,
+                    name,
+                    cal: calories,
+                    price,
+                    paymentMethod,
+                    note,
+                    sourceUrl: finalSourceUrl,
+                    calorieSource: meta.source || '手動輸入',
+                    calorieMatch: meta.matchedProduct || '',
+                    calorieBasis: meta.basis || '',
+                    timestamp
+                };
+                updates[`foodLibrary/${libraryKey}`] = {
+                    store,
+                    name,
+                    calories,
+                    lastPrice: price,
+                    sourceUrl: finalSourceUrl,
+                    source: meta.source || '我的紀錄',
+                    useCount: Number(oldLibrary.useCount || 0) + 1,
+                    updatedAt: Date.now(),
+                    lastUsedAt: Date.now()
+                };
+                await db.ref().update(updates);
+                closeFoodModal();
+                showToast('✅ 食物已記錄，並加入你的自動帶入資料庫！');
+                if (finalSourceUrl) {
+                    ensureSourceLibraryUrl(finalSourceUrl, {
+                        store,
+                        name: [store, name].filter(Boolean).join(' · '),
+                        silent: true
+                    }).catch(error => console.error('自動加入資料來源庫失敗：', error));
+                }
+            } catch (error) {
+                showFirebaseError('儲存食物', error);
+            }
+        }
+
+        function openEditFoodModal(idx, timestamp) {
+            if (!requireDatabase()) return;
+            const today = getTaipeiDateString();
+            db.ref(`foods/${today}/${timestamp}`).once('value', (snapshot) => {
+                const food = snapshot.val();
+                editingFoodIdx = timestamp;
+                
+                document.getElementById('editFoodTime').value = food.time;
+                document.getElementById('editFoodStore').value = food.store || '';
+                document.getElementById('editFoodName').value = food.name;
+                document.getElementById('editFoodCal').value = food.cal;
+                document.getElementById('editFoodPrice').value = food.price != null ? food.price : '';
+                document.getElementById('editFoodPaymentMethod').value = food.paymentMethod || '';
+                document.getElementById('editFoodSourceUrl').value = food.sourceUrl || '';
+                document.getElementById('editFoodNote').value = food.note || '';
+                document.getElementById('editFoodModal').classList.add('show');
+            });
+        }
+
+        function closeEditFoodModal() {
+            document.getElementById('editFoodModal').classList.remove('show');
+            editingFoodIdx = null;
+        }
+
+        async function saveEditFood() {
+            if (!requireDatabase()) return;
+            const time = document.getElementById('editFoodTime').value;
+            const store = document.getElementById('editFoodStore').value.trim();
+            const name = document.getElementById('editFoodName').value.trim();
+            const cal = parseInt(document.getElementById('editFoodCal').value) || estimateCalories(`${store} ${name}`);
+            const priceRaw = document.getElementById('editFoodPrice').value;
+            const price = priceRaw === '' ? 0 : Math.max(0, Number(priceRaw) || 0);
+            const paymentMethod = document.getElementById('editFoodPaymentMethod').value;
+            const sourceUrl = document.getElementById('editFoodSourceUrl').value.trim();
+            const note = document.getElementById('editFoodNote').value;
+
+            if (!time || !name) {
+                alert('請輸入時間和食物名稱');
+                return;
+            }
+
+            if (price > 0 && !paymentMethod) {
+                showToast('💳 有填餐費時，請選擇付款方式', 'error');
+                return;
+            }
+
+            const today = getTaipeiDateString();
+            const libraryKey = getFoodLibraryKey(store, name);
+            const oldLibrary = personalFoodLibrary[libraryKey] || {};
+
+            try {
+                const updates = {};
+                updates[`foods/${today}/${editingFoodIdx}`] = {
+                    time,
+                    store,
+                    name,
+                    cal,
+                    price,
+                    paymentMethod,
+                    note,
+                    sourceUrl,
+                    calorieSource: '手動更新',
+                    calorieBasis: '你最後確認的熱量',
+                    timestamp: Number(editingFoodIdx) || editingFoodIdx
+                };
+                updates[`foodLibrary/${libraryKey}`] = {
+                    store,
+                    name,
+                    calories: cal,
+                    lastPrice: price,
+                    sourceUrl,
+                    source: '手動更新',
+                    useCount: Number(oldLibrary.useCount || 0) + 1,
+                    updatedAt: Date.now(),
+                    lastUsedAt: Date.now()
+                };
+                await db.ref().update(updates);
+                closeEditFoodModal();
+                showToast('✅ 食物已更新，之後會以這次資料自動帶入！');
+                if (sourceUrl) {
+                    ensureSourceLibraryUrl(sourceUrl, {
+                        store,
+                        name: [store, name].filter(Boolean).join(' · '),
+                        silent: true
+                    }).catch(error => console.error('自動加入資料來源庫失敗：', error));
+                }
+            } catch (error) {
+                showFirebaseError('更新食物', error);
+            }
+        }
+
+        async function deleteFood(timestamp) {
+            if (!requireDatabase()) return;
+            const today = getTaipeiDateString();
+
+            try {
+                await db.ref(`foods/${today}/${timestamp}`).remove();
+            } catch (error) {
+                showFirebaseError('刪除食物', error);
+            }
+        }
+
+        function loadFoodRecords() {
+            const today = getTaipeiDateString();
+            db.ref(`foods/${today}`).on('value', (snapshot) => {
+                const foods = snapshot.val() || {};
+                const timestamps = Object.keys(foods).sort();
+                
+                let html = '';
+                let totalCal = 0;
+                let totalMealCost = 0;
+                
+                if (timestamps.length === 0) {
+                    html = '<p style="color: #999; text-align: center;">還沒有記錄食物</p>';
+                } else {
+                    timestamps.forEach((timestamp, idx) => {
+                        const food = foods[timestamp];
+                        totalCal += Number(food.cal) || 0;
+                        totalMealCost += Number(food.price) || 0;
+                        html += `
+                            <div class="food-item">
+                                <div class="food-item-content">
+                                    <div class="food-item-time">⏰ ${food.time}</div>
+                                    <div class="food-item-name">🍽️ ${food.store ? `${food.store} · ` : ''}${food.name}</div>
+                                    <div class="food-item-cal">
+                                        📊 ${food.cal} 卡
+                                        ${Number(food.price) > 0 ? `｜💰 NT$${Number(food.price).toLocaleString('zh-TW')}` : ''}
+                                        ${food.paymentMethod ? `｜💳 ${food.paymentMethod}` : ''}
+                                        ${food.note ? `| 📝 ${food.note}` : ''}
+                                        ${food.calorieSource ? `<div style="margin-top:3px;color:#999;">來源：${food.calorieSource}${food.calorieBasis ? `｜${food.calorieBasis}` : ''}</div>` : ''}
+                                        ${safeHttpUrl(food.sourceUrl) ? `<a class="source-url-link" href="${safeHttpUrl(food.sourceUrl)}" target="_blank" rel="noopener noreferrer">🔗 開啟參考網址</a>` : ''}
+                                    </div>
+                                </div>
+                                <div class="food-item-actions">
+                                    <button class="btn-small" onclick="openEditFoodModal(${idx}, '${timestamp}')">編輯</button>
+                                    <button class="btn-small" style="background: #ff6b6b;" onclick="deleteFood('${timestamp}')">刪除</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+                document.getElementById('foodRecordsContainer').innerHTML = html;
+                document.getElementById('dailyCal').textContent = totalCal;
+                const mealCostEl = document.getElementById('dailyMealCost');
+                if (mealCostEl) mealCostEl.textContent = `NT$${totalMealCost.toLocaleString('zh-TW')}`;
+            });
+        }
+
+
+        function loadSpendingStats() {
+            db.ref('foods').on('value', (snapshot) => {
+                const allFoods = snapshot.val() || {};
+                const totals = {
+                    '街口支付': 0,
+                    'LINE Pay': 0,
+                    '台灣行動支付': 0,
+                    '轉帳': 0,
+                    '現金': 0,
+                    '未標示': 0
+                };
+                let totalSpend = 0;
+
+                Object.values(allFoods).forEach(dayFoods => {
+                    if (!dayFoods || typeof dayFoods !== 'object') return;
+                    Object.values(dayFoods).forEach(food => {
+                        if (!food || typeof food !== 'object') return;
+                        const price = Number(food.price) || 0;
+                        if (price <= 0) return;
+
+                        totalSpend += price;
+                        const method = food.paymentMethod || '未標示';
+                        if (!Object.prototype.hasOwnProperty.call(totals, method)) {
+                            totals[method] = 0;
+                        }
+                        totals[method] += price;
+                    });
+                });
+
+                const totalSpendEl = document.getElementById('totalSpend');
+                if (totalSpendEl) {
+                    totalSpendEl.textContent = `NT$${Math.round(totalSpend).toLocaleString('zh-TW')}`;
+                }
+
+                const breakdownEl = document.getElementById('paymentBreakdown');
+                if (breakdownEl) {
+                    const displayMethods = ['街口支付', 'LINE Pay', '台灣行動支付', '轉帳', '現金'];
+                    if (totals['未標示'] > 0) displayMethods.push('未標示');
+
+                    breakdownEl.innerHTML = displayMethods.map(method => `
+                        <div class="stat-card">
+                            <div class="stat-label">${method}</div>
+                            <div class="stat-value">NT$${Math.round(totals[method] || 0).toLocaleString('zh-TW')}</div>
+                        </div>
+                    `).join('');
+                }
+            });
+        }
+
+        function loadStats() {
+            const today = new Date();
+            let exerciseCount = 0;
+            let bobaCount = 0;
+
+            for (let i = 0; i < 7; i++) {
+                const date = new Date(today);
+                date.setDate(date.getDate() - i);
+                const dateStr = getTaipeiDateString(date);
+                db.ref(`checklist/${dateStr}`).once('value', (snapshot) => {
+                    const data = snapshot.val() || {};
+                    if (data.exercise) exerciseCount++;
+                    if (data.boba) bobaCount++;
+                    document.getElementById('weekExercise').textContent = exerciseCount;
+                    document.getElementById('bobaCount').textContent = bobaCount;
+                });
+            }
+        }
+
+        function loadWeeklyReport() {
+            const today = new Date();
+            let stats = { bobaCount: 0, waterCount: 0, mealsCount: 0, exerciseCount: 0, days: 0 };
+
+            for (let i = 0; i < 7; i++) {
+                const date = new Date(today);
+                date.setDate(date.getDate() - i);
+                const dateStr = getTaipeiDateString(date);
+                db.ref(`checklist/${dateStr}`).once('value', (snapshot) => {
+                    const data = snapshot.val() || {};
+                    stats.days++;
+                    if (data.boba) stats.bobaCount++;
+                    if (data.water) stats.waterCount++;
+                    if (data.meals) stats.mealsCount++;
+                    if (data.exercise) stats.exerciseCount++;
+
+                    const completionRate = stats.days > 0 ? Math.round((stats.waterCount + stats.mealsCount + stats.exerciseCount) / (stats.days * 3) * 100) : 0;
+
+                    let html = `
+                        <div class="stat-grid">
+                            <div class="stat-card">
+                                <div class="stat-label">珍奶戒斷</div>
+                                <div class="stat-value">${stats.bobaCount}/${stats.days}</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">喝水充足</div>
+                                <div class="stat-value">${stats.waterCount}/${stats.days}</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">三餐完整</div>
+                                <div class="stat-value">${stats.mealsCount}/${stats.days}</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">運動完成</div>
+                                <div class="stat-value">${stats.exerciseCount}/${stats.days}</div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 20px; padding: 16px; background: #f5f5f5; border-radius: 6px;">
+                            <p><strong>本周完成率：${completionRate}%</strong></p>
+                            <p style="margin-top: 8px; color: #666;">堅持就是勝利！繼續保持好習慣，4 個月達成目標 🎯</p>
+                        </div>
+                    `;
+
+                    document.getElementById('weeklyReport').innerHTML = html;
+                });
+            }
+        }
+
+        const WATER_GOAL_ML = 2000;
+        const WATER_CUP_ML = 250;
+        let currentWaterML = 0;
+
+        function renderWaterIntake(totalML) {
+            currentWaterML = Math.max(0, Number(totalML) || 0);
+            const amount = document.getElementById('waterAmount');
+            const progress = document.getElementById('waterProgressBar');
+            const goalText = document.getElementById('waterGoalText');
+            const cups = document.getElementById('waterCups');
+            if (!amount || !progress || !goalText || !cups) return;
+
+            amount.textContent = currentWaterML.toLocaleString('zh-TW');
+            const percent = Math.min(100, currentWaterML / WATER_GOAL_ML * 100);
+            progress.style.width = `${percent}%`;
+            goalText.textContent = currentWaterML >= WATER_GOAL_ML
+                ? `🎉 今日目標已完成 +${(currentWaterML - WATER_GOAL_ML).toLocaleString('zh-TW')} ml`
+                : `距離 2,000 ml 還差 ${(WATER_GOAL_ML - currentWaterML).toLocaleString('zh-TW')} ml`;
+
+            cups.innerHTML = '';
+            for (let i = 1; i <= 8; i++) {
+                const cupStart = (i - 1) * WATER_CUP_ML;
+                const fill = Math.max(0, Math.min(1, (currentWaterML - cupStart) / WATER_CUP_ML));
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'water-cup';
+                btn.style.setProperty('--fill', `${fill * 100}%`);
+                btn.title = `設定為 ${i * WATER_CUP_ML} ml`;
+                btn.setAttribute('aria-label', `設定喝水量為 ${i * WATER_CUP_ML} ml`);
+                btn.innerHTML = `<span class="water-cup-fill"></span><span class="water-cup-label">${fill > 0 ? '💧' : ''}</span>`;
+                btn.addEventListener('click', () => setWaterIntake(i * WATER_CUP_ML));
+                cups.appendChild(btn);
+            }
+        }
+
+        function loadWaterIntake() {
+            if (!db) return;
+            const today = getTaipeiDateString();
+            db.ref(`waterIntake/${today}`).on('value', snapshot => {
+                const data = snapshot.val();
+                renderWaterIntake(data && typeof data === 'object' ? data.totalML : (data || 0));
+            }, error => console.error('讀取喝水量失敗：', error));
+        }
+
+        async function setWaterIntake(totalML, showMessage = true) {
+            if (!requireDatabase()) return;
+            const today = getTaipeiDateString();
+            const next = Math.max(0, Math.min(10000, Math.round(Number(totalML) || 0)));
+            try {
+                const updates = {};
+                updates[`waterIntake/${today}`] = { totalML: next, updatedAt: Date.now() };
+                updates[`checklist/${today}/water`] = next >= WATER_GOAL_ML;
+                await db.ref().update(updates);
+                if (showMessage) showToast(`💧 今日喝水已記錄：${next.toLocaleString('zh-TW')} ml`);
+            } catch (error) {
+                showFirebaseError('儲存喝水量', error);
+            }
+        }
+
+        function changeWaterIntake(delta) {
+            setWaterIntake(currentWaterML + delta);
+        }
+
+        function openWaterModal() {
+            if (!requireDatabase()) return;
+            document.getElementById('waterModal').classList.add('show');
+            db.ref('waterReminder').once('value', (snapshot) => {
+                const settings = snapshot.val() || {};
+                document.getElementById('waterInterval').value = settings.interval || 60;
+                document.getElementById('waterStartTime').value = settings.startTime || '06:00';
+                document.getElementById('waterEndTime').value = settings.endTime || '22:00';
+            });
+        }
+
+        function closeWaterModal() {
+            document.getElementById('waterModal').classList.remove('show');
+        }
+
+        async function saveWaterReminder() {
+            if (!requireDatabase()) return;
+            const interval = parseInt(document.getElementById('waterInterval').value);
+            const startTime = document.getElementById('waterStartTime').value;
+            const endTime = document.getElementById('waterEndTime').value;
+
+            if (!interval || interval < 5) {
+                alert('請輸入合理的時間間隔（至少 5 分鐘）');
+                return;
+            }
+
+            try {
+                await db.ref('waterReminder').set({ interval, startTime, endTime, enabled: true });
+                closeWaterModal();
+                showToast('✅ 喝水提醒已設定！');
+            } catch (error) {
+                showFirebaseError('設定喝水提醒', error);
+            }
+        }
+
+        async function stopWaterReminder() {
+            if (!requireDatabase()) return;
+
+            try {
+                await db.ref('waterReminder/enabled').set(false);
+                closeWaterModal();
+                showToast('💧 已停止喝水提醒', 'info');
+            } catch (error) {
+                showFirebaseError('停止喝水提醒', error);
+            }
+        }
+
+
+        // ===== 歷史紀錄：每日自動封存 =====
+        let historyDates = [];
+        let historyDataCache = {};
+        let historyIndex = -1;
+        let appTaipeiDate = getTaipeiDateString();
+        let historyMidnightTimer = null;
+
+        function addDaysToDateKey(dateKey, days) {
+            const [year, month, day] = String(dateKey).split('-').map(Number);
+            const date = new Date(Date.UTC(year, month - 1, day + days));
+            const y = date.getUTCFullYear();
+            const m = String(date.getUTCMonth() + 1).padStart(2, '0');
+            const d = String(date.getUTCDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        }
+
+        function getHistoryDateLabel(dateKey) {
+            try {
+                const date = new Date(`${dateKey}T12:00:00+08:00`);
+                const parts = new Intl.DateTimeFormat('zh-TW', {
+                    timeZone: 'Asia/Taipei',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    weekday: 'long'
+                }).format(date);
+                return parts;
+            } catch (error) {
+                return dateKey;
+            }
+        }
+
+        function normalizeHistoryFoods(foodsForDay) {
+            return Object.entries(foodsForDay || {})
+                .map(([id, food]) => ({ id, ...(food || {}) }))
+                .sort((a, b) => String(a.time || '').localeCompare(String(b.time || '')));
+        }
+
+        function buildHistorySnapshot(dateKey, roots) {
+            const foods = normalizeHistoryFoods((roots.foods || {})[dateKey]);
+            const checklist = ((roots.checklist || {})[dateKey]) || {};
+            const waterRaw = ((roots.waterIntake || {})[dateKey]);
+            const waterML = waterRaw && typeof waterRaw === 'object'
+                ? Number(waterRaw.totalML || 0)
+                : Number(waterRaw || 0);
+            const weight = ((roots.weights || {})[dateKey]) || null;
+            const totalCalories = foods.reduce((sum, food) => sum + (Number(food.cal) || 0), 0);
+            const totalMealCost = foods.reduce((sum, food) => sum + (Number(food.price) || 0), 0);
+            const paymentBreakdown = foods.reduce((acc, food) => {
+                const price = Number(food.price) || 0;
+                const method = food.paymentMethod || (price > 0 ? '未標示' : '');
+                if (method && price > 0) acc[method] = (acc[method] || 0) + price;
+                return acc;
+            }, {});
+            const checklistDone = ['boba', 'water', 'meals', 'exercise', 'snack']
+                .filter(key => Boolean(checklist[key])).length;
+            const hasActivity = foods.length > 0 || waterML > 0 || Boolean(weight) || Object.keys(checklist).length > 0;
+
+            return {
+                date: dateKey,
+                totalCalories,
+                totalMealCost,
+                paymentBreakdown,
+                waterML,
+                weight,
+                checklist,
+                checklistDone,
+                foods,
+                hasActivity,
+                archivedAt: Date.now()
+            };
+        }
+
+        async function archivePastDays() {
+            if (!db) return;
+            const today = getTaipeiDateString();
+
+            try {
+                const [foodsSnap, checklistSnap, waterSnap, weightsSnap, historySnap] = await Promise.all([
+                    db.ref('foods').once('value'),
+                    db.ref('checklist').once('value'),
+                    db.ref('waterIntake').once('value'),
+                    db.ref('weights').once('value'),
+                    db.ref('history').once('value')
+                ]);
+
+                const roots = {
+                    foods: foodsSnap.val() || {},
+                    checklist: checklistSnap.val() || {},
+                    waterIntake: waterSnap.val() || {},
+                    weights: weightsSnap.val() || {}
+                };
+                const existingHistory = historySnap.val() || {};
+
+                const discoveredDates = new Set();
+                Object.values(roots).forEach(root => {
+                    Object.keys(root || {}).forEach(dateKey => {
+                        if (/^\d{4}-\d{2}-\d{2}$/.test(dateKey) && dateKey < today) discoveredDates.add(dateKey);
+                    });
+                });
+                Object.keys(existingHistory).forEach(dateKey => {
+                    if (/^\d{4}-\d{2}-\d{2}$/.test(dateKey) && dateKey < today) discoveredDates.add(dateKey);
+                });
+
+                if (discoveredDates.size === 0) return;
+
+                const firstDate = [...discoveredDates].sort()[0];
+                const yesterday = addDaysToDateKey(today, -1);
+                const updates = {};
+                let cursor = firstDate;
+                let safety = 0;
+
+                while (cursor <= yesterday && safety < 3660) {
+                    // 已封存的頁面保留；跨日時或下次開啟會補齊缺少的日期。
+                    if (!existingHistory[cursor]) {
+                        updates[`history/${cursor}`] = buildHistorySnapshot(cursor, roots);
+                    }
+                    cursor = addDaysToDateKey(cursor, 1);
+                    safety++;
+                }
+
+                if (Object.keys(updates).length > 0) {
+                    await db.ref().update(updates);
+                }
+            } catch (error) {
+                console.error('自動封存歷史紀錄失敗：', error);
+            }
+        }
+
+        async function refreshHistoryDate(dateKey) {
+            if (!db || !/^\d{4}-\d{2}-\d{2}$/.test(String(dateKey || ''))) return;
+            if (dateKey >= getTaipeiDateString()) return;
+            try {
+                const [foodsSnap, checklistSnap, waterSnap, weightSnap] = await Promise.all([
+                    db.ref(`foods/${dateKey}`).once('value'),
+                    db.ref(`checklist/${dateKey}`).once('value'),
+                    db.ref(`waterIntake/${dateKey}`).once('value'),
+                    db.ref(`weights/${dateKey}`).once('value')
+                ]);
+                const roots = {
+                    foods: { [dateKey]: foodsSnap.val() || {} },
+                    checklist: { [dateKey]: checklistSnap.val() || {} },
+                    waterIntake: { [dateKey]: waterSnap.val() || 0 },
+                    weights: { [dateKey]: weightSnap.val() || null }
+                };
+                await db.ref(`history/${dateKey}`).set(buildHistorySnapshot(dateKey, roots));
+            } catch (error) {
+                console.error('更新歷史頁失敗：', error);
+            }
+        }
+
+        async function openHistoryModal() {
+            if (!requireDatabase()) return;
+            const modal = document.getElementById('historyModal');
+            const page = document.getElementById('historyPage');
+            modal.classList.add('show');
+            page.innerHTML = '<div class="history-loading">正在整理過往紀錄…</div>';
+
+            await archivePastDays();
+            try {
+                const snapshot = await db.ref('history').once('value');
+                historyDataCache = snapshot.val() || {};
+                historyDates = Object.keys(historyDataCache).filter(date => date < getTaipeiDateString()).sort();
+                historyIndex = historyDates.length - 1;
+                buildHistoryDateSelect();
+                renderHistoryPage(false);
+            } catch (error) {
+                page.innerHTML = `<div class="history-empty-day">讀取歷史紀錄失敗：${escapeHtml(error.message || error)}</div>`;
+            }
+        }
+
+        function closeHistoryModal() {
+            document.getElementById('historyModal').classList.remove('show');
+        }
+
+        function buildHistoryDateSelect() {
+            const select = document.getElementById('historyDateSelect');
+            if (!select) return;
+            if (historyDates.length === 0) {
+                select.innerHTML = '<option value="">尚無歷史紀錄</option>';
+                select.disabled = true;
+                return;
+            }
+            select.disabled = false;
+            select.innerHTML = historyDates.slice().reverse().map(date =>
+                `<option value="${escapeHtml(date)}">${escapeHtml(getHistoryDateLabel(date))}</option>`
+            ).join('');
+            if (historyIndex >= 0) select.value = historyDates[historyIndex];
+        }
+
+        function renderHistoryPage(animateIn = false, direction = 1) {
+            const page = document.getElementById('historyPage');
+            const prevBtn = document.getElementById('historyPrevBtn');
+            const nextBtn = document.getElementById('historyNextBtn');
+            const select = document.getElementById('historyDateSelect');
+            if (!page) return;
+
+            if (historyDates.length === 0 || historyIndex < 0) {
+                page.innerHTML = `
+                    <div class="history-date-row">
+                        <div>
+                            <div class="history-date-main">還沒有可以翻閱的日誌</div>
+                            <div class="history-date-sub">今天的資料會在一天結束後自動收進這裡。</div>
+                        </div>
+                    </div>
+                    <div class="history-empty-day">先記錄今天的飲食、喝水、體重或 Checklist，明天再打開時就會形成第一頁。</div>
+                `;
+                if (prevBtn) prevBtn.disabled = true;
+                if (nextBtn) nextBtn.disabled = true;
+                return;
+            }
+
+            const dateKey = historyDates[historyIndex];
+            const data = historyDataCache[dateKey] || {};
+            const foods = Array.isArray(data.foods) ? data.foods : normalizeHistoryFoods(data.foods || {});
+            const checklist = data.checklist || {};
+            const waterML = Number(data.waterML || 0);
+            const totalCalories = Number(data.totalCalories || foods.reduce((sum, food) => sum + (Number(food.cal) || 0), 0));
+            const totalMealCost = Number(data.totalMealCost || foods.reduce((sum, food) => sum + (Number(food.price) || 0), 0));
+            const weightValue = data.weight && data.weight.weight != null ? Number(data.weight.weight) : null;
+            const doneCount = ['water', 'meals', 'exercise'].filter(key => Boolean(checklist[key])).length;
+            const hasActivity = Boolean(data.hasActivity) || foods.length || waterML || weightValue != null || Object.keys(checklist).length;
+
+            const checklistLabels = [
+                ['boba', '喝珍奶'],
+                ['water', '喝水 2L'],
+                ['meals', '三餐完整'],
+                ['exercise', '完成運動'],
+                ['snack', '吃宵夜']
+            ];
+
+            const foodHtml = foods.length ? foods.map(food => `
+                <div class="history-food-row">
+                    <div class="history-food-time">${escapeHtml(food.time || '--:--')}</div>
+                    <div>
+                        <div class="history-food-name">${escapeHtml(food.name || '未命名品項')}</div>
+                        ${food.store ? `<div class="history-food-store">${escapeHtml(food.store)}</div>` : ''}
+                        ${food.note ? `<div class="history-food-note">${escapeHtml(food.note)}</div>` : ''}
+                    </div>
+                    <div>
+                        <div class="history-food-cal">${Number(food.cal || 0).toLocaleString('zh-TW')} 卡</div>
+                        ${Number(food.price) > 0 ? `<div class="history-food-price">NT$${Number(food.price).toLocaleString('zh-TW')}</div>` : ''}
+                        ${food.paymentMethod ? `<div class="history-food-price" style="color:#6d7480;">${escapeHtml(food.paymentMethod)}</div>` : ''}
+                    </div>
+                </div>
+            `).join('') : '<div class="history-empty-day" style="padding:20px 12px;">這天沒有飲食紀錄</div>';
+
+            const checkHtml = checklistLabels.map(([key, label]) => {
+                const checked = Boolean(checklist[key]);
+                return `<div class="history-check-item ${checked ? 'done' : ''}"><span class="history-check-icon">${checked ? '✓' : '○'}</span><span>${escapeHtml(label)}</span></div>`;
+            }).join('');
+
+            page.innerHTML = `
+                <div class="history-date-row">
+                    <div>
+                        <div class="history-date-main">${escapeHtml(getHistoryDateLabel(dateKey))}</div>
+                        <div class="history-date-sub">一天一頁 · 自動封存日誌</div>
+                    </div>
+                    <div class="history-page-number">${historyIndex + 1} / ${historyDates.length}</div>
+                </div>
+                <div class="history-summary-grid">
+                    <div class="history-summary-card">
+                        <div class="history-summary-label">攝取熱量</div>
+                        <div class="history-summary-value">${totalCalories.toLocaleString('zh-TW')} <span style="font-size:11px;font-weight:600;">卡</span></div>
+                    </div>
+                    <div class="history-summary-card">
+                        <div class="history-summary-label">餐費</div>
+                        <div class="history-summary-value">NT$${totalMealCost.toLocaleString('zh-TW')}</div>
+                    </div>
+                    <div class="history-summary-card">
+                        <div class="history-summary-label">喝水</div>
+                        <div class="history-summary-value">${waterML.toLocaleString('zh-TW')} <span style="font-size:11px;font-weight:600;">ml</span></div>
+                    </div>
+                    <div class="history-summary-card">
+                        <div class="history-summary-label">體重</div>
+                        <div class="history-summary-value">${weightValue != null ? weightValue.toFixed(1) : '—'} <span style="font-size:11px;font-weight:600;">${weightValue != null ? 'kg' : ''}</span></div>
+                    </div>
+                    <div class="history-summary-card">
+                        <div class="history-summary-label">核心目標</div>
+                        <div class="history-summary-value">${doneCount}/3</div>
+                    </div>
+                </div>
+                ${hasActivity ? `
+                    <div class="history-page-columns">
+                        <section>
+                            <div class="history-section-title">🍽️ 這天吃了什麼</div>
+                            <div class="history-food-list">${foodHtml}</div>
+                        </section>
+                        <section>
+                            <div class="history-section-title">✓ 每日檢查</div>
+                            <div class="history-check-list">${checkHtml}</div>
+                            ${data.weight && data.weight.note ? `<div class="history-weight-note"><strong>體重備註</strong><br>${escapeHtml(data.weight.note)}</div>` : ''}
+                        </section>
+                    </div>
+                ` : '<div class="history-empty-day">這一天沒有留下紀錄，仍保留成一頁，讓時間軸不中斷。</div>'}
+            `;
+
+            if (animateIn) {
+                page.classList.remove('turn-in-next', 'turn-in-prev');
+                void page.offsetWidth;
+                page.classList.add(direction > 0 ? 'turn-in-next' : 'turn-in-prev');
+                setTimeout(() => page.classList.remove('turn-in-next', 'turn-in-prev'), 280);
+            }
+
+            if (prevBtn) prevBtn.disabled = historyIndex <= 0;
+            if (nextBtn) nextBtn.disabled = historyIndex >= historyDates.length - 1;
+            if (select) select.value = dateKey;
+        }
+
+        function turnHistoryPage(direction) {
+            if (!historyDates.length) return;
+            const nextIndex = historyIndex + direction;
+            if (nextIndex < 0 || nextIndex >= historyDates.length) return;
+            const page = document.getElementById('historyPage');
+            const outClass = direction > 0 ? 'turn-out-next' : 'turn-out-prev';
+            page.classList.add(outClass);
+            setTimeout(() => {
+                historyIndex = nextIndex;
+                page.classList.remove('turn-out-next', 'turn-out-prev');
+                renderHistoryPage(true, direction);
+            }, 170);
+        }
+
+        function jumpHistoryDate(dateKey) {
+            const index = historyDates.indexOf(dateKey);
+            if (index < 0 || index === historyIndex) return;
+            const direction = index > historyIndex ? 1 : -1;
+            const page = document.getElementById('historyPage');
+            page.classList.add(direction > 0 ? 'turn-out-next' : 'turn-out-prev');
+            setTimeout(() => {
+                historyIndex = index;
+                page.classList.remove('turn-out-next', 'turn-out-prev');
+                renderHistoryPage(true, direction);
+            }, 170);
+        }
+
+        function startDailyArchiveWatcher() {
+            if (historyMidnightTimer) clearInterval(historyMidnightTimer);
+            appTaipeiDate = getTaipeiDateString();
+            historyMidnightTimer = setInterval(async () => {
+                const currentDate = getTaipeiDateString();
+                if (currentDate !== appTaipeiDate) {
+                    await archivePastDays();
+                    // 重新載入讓所有「今日」Firebase listener 切換到新日期。
+                    location.reload();
+                }
+            }, 60000);
+        }
+
+        async function clearAllData() {
+            if (!requireDatabase()) return;
+            if (!confirm('⚠️ 確定要清空所有數據嗎？這個動作無法撤銷！')) return;
+
+            try {
+                await db.ref().remove();
+                location.reload();
+            } catch (error) {
+                showFirebaseError('清空所有數據', error);
+            }
+        }
+
+        window.addEventListener('load', () => {
+            displayDate();
+            loadTodaySchedule();
+            monitorFirebaseConnection();
+
+            if (!db) {
+                const message = firebaseInitError && firebaseInitError.message
+                    ? firebaseInitError.message
+                    : '未知初始化錯誤';
+                console.error('Firebase 無法使用：', message);
+                alert(`❌ Firebase 初始化失敗：${message}`);
+                return;
+            }
+
+            loadChecklistData();
+            loadWeightHistory();
+            loadSourceLibrary();
+            loadPersonalFoodLibrary();
+            loadFoodRecords();
+            loadSpendingStats();
+            loadWaterIntake();
+            loadStats();
+            loadWeeklyReport();
+            archivePastDays();
+            startDailyArchiveWatcher();
+            bindCalorieLookup();
+        });
+    </script>
+</body>
+</html>
